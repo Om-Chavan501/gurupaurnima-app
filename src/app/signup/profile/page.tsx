@@ -22,11 +22,13 @@ export default async function ProfileSetup() {
 
   return (
     <PageTransition>
-      <div className="max-w-2xl mx-auto pt-6">
-        <div className="text-xs tracking-[0.4em] uppercase mb-3" style={{ color: "var(--ink-2)" }}>Step 2 of 2</div>
-        <h1 className="font-display text-4xl md:text-5xl">Tell us a little more.</h1>
-        <p className="mt-3" style={{ color: "var(--ink-1)" }}>
-          So your guru and fellow shishyas know who&rsquo;s walking in.
+      <div className="max-w-2xl mx-auto pt-2 md:pt-6">
+        <div className="text-[11px] tracking-[0.32em] uppercase mb-3" style={{ color: "var(--ink-2)" }}>Step 2 of 2</div>
+        <h1 className="font-display" style={{ fontSize: "clamp(34px, 5.5vw, 50px)", lineHeight: 1.05 }}>
+          A little more about you.
+        </h1>
+        <p className="mt-3 text-[15px]" style={{ color: "var(--ink-1)" }}>
+          So your guru and the other shishyas can recognise you.
         </p>
         <ProfileSetupForm
           userId={user.id}

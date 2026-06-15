@@ -60,7 +60,7 @@ export default function PerformanceForm({ initial, targetUserId }: Props) {
         <div className="text-xs tracking-[0.3em] uppercase mb-3" style={{ color: "var(--ink-2)" }}>Will you perform?</div>
         <div className="flex gap-3">
           {[
-            { v: true,  label: "Yes, I'll offer something" },
+            { v: true,  label: "Yes, I'll perform something" },
             { v: false, label: "Not this time" },
           ].map((opt) => (
             <button

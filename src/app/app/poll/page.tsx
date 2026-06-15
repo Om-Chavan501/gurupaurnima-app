@@ -29,26 +29,54 @@ export default async function PollPage() {
 
   return (
     <PageTransition>
-      <section className="pt-6">
-        <div className="text-xs tracking-[0.4em] uppercase mb-3" style={{ color: "var(--ink-2)" }}>The poll</div>
-        <h1 className="font-display text-4xl md:text-5xl">Which evening will you grace?</h1>
-        <p className="mt-3 max-w-xl" style={{ color: "var(--ink-1)" }}>
-          Pick all the dates that suit. Leave empty if none can.
+      <section className="pt-2 md:pt-6">
+        <div className="text-[11px] tracking-[0.32em] uppercase mb-3" style={{ color: "var(--ink-2)" }}>
+          The date poll
+        </div>
+        <h1
+          className="font-display"
+          style={{ fontSize: "clamp(34px, 5.5vw, 54px)", lineHeight: 1.05 }}
+        >
+          Which night suits you?
+        </h1>
+        <p className="mt-3 max-w-xl text-[15px]" style={{ color: "var(--ink-1)" }}>
+          Tick every date that works. If none of these suit, mark that instead.
+          You can come back and change this any time.
         </p>
 
         <PollForm initial={myPicked} />
+      </section>
 
-        <div className="mt-20 grid md:grid-cols-3 gap-10">
+      <div className="rule mt-16" />
+
+      <section className="pt-10 pb-6">
+        <div className="text-[11px] tracking-[0.32em] uppercase mb-6" style={{ color: "var(--ink-2)" }}>
+          Where everyone stands
+        </div>
+        <div className="grid md:grid-cols-3 gap-y-10 md:gap-x-10">
           {EVENT_DATES.map((d) => (
             <div key={d.value}>
-              <div className="text-xs tracking-[0.3em] uppercase" style={{ color: "var(--ink-2)" }}>{d.label}</div>
-              <div className="font-display text-3xl mt-1">{tally[d.value].length}</div>
-              <ul className="mt-3 space-y-1 text-sm" style={{ color: "var(--ink-1)" }}>
+              <div className="text-[11px] tracking-[0.3em] uppercase" style={{ color: "var(--ink-2)" }}>
+                {d.label}
+              </div>
+              <div
+                className="font-display mt-1"
+                style={{ fontSize: "clamp(36px, 5vw, 48px)", color: "var(--ink-0)", lineHeight: 1 }}
+              >
+                {tally[d.value].length}
+              </div>
+              <p className="mt-1 text-[11px] tracking-[0.18em] uppercase" style={{ color: "var(--ink-2)" }}>
+                people available
+              </p>
+              <ul className="mt-4 space-y-1 text-sm" style={{ color: "var(--ink-1)" }}>
                 {tally[d.value].slice(0, 30).map((p) => (
-                  <li key={p.id}>· {p.first_name} {p.last_name}</li>
+                  <li key={p.id} className="truncate">{p.first_name} {p.last_name}</li>
                 ))}
                 {tally[d.value].length > 30 && (
                   <li style={{ color: "var(--ink-2)" }}>and {tally[d.value].length - 30} more</li>
+                )}
+                {tally[d.value].length === 0 && (
+                  <li style={{ color: "var(--ink-2)" }}>—</li>
                 )}
               </ul>
             </div>

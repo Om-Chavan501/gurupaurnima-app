@@ -29,7 +29,9 @@ export default function LoginPage() {
     <PageTransition>
       <div className="max-w-md mx-auto pt-10">
         <div className="text-xs tracking-[0.4em] uppercase mb-3" style={{ color: "var(--ink-2)" }}>Welcome back</div>
-        <h1 className="font-display text-4xl md:text-5xl">Step inside.</h1>
+        <h1 className="font-display" style={{ fontSize: "clamp(34px, 5.5vw, 50px)", lineHeight: 1.05 }}>
+          Sign in.
+        </h1>
 
         <form onSubmit={submit} className="mt-10 space-y-7">
           <div className="field-group">
@@ -52,7 +54,7 @@ export default function LoginPage() {
           </div>
 
           <p className="text-sm" style={{ color: "var(--ink-2)" }}>
-            New to the aangan? <Link href="/signup" className="btn-link">Join</Link>
+            New here? <Link href="/signup" className="btn-link">Join</Link>
           </p>
         </form>
       </div>

@@ -34,25 +34,53 @@ export default async function PerformancesPage() {
 
   return (
     <PageTransition>
-      <section className="pt-6">
-        <div className="text-xs tracking-[0.4em] uppercase mb-3" style={{ color: "var(--ink-2)" }}>Compositions</div>
-        <h1 className="font-display text-4xl md:text-5xl">What will be offered.</h1>
-        <p className="mt-3" style={{ color: "var(--ink-1)" }}>So no two souls pick the same.</p>
+      <section className="pt-2 md:pt-6">
+        <div className="text-[11px] tracking-[0.32em] uppercase mb-3" style={{ color: "var(--ink-2)" }}>
+          The compositions
+        </div>
+        <h1
+          className="font-display"
+          style={{ fontSize: "clamp(34px, 5.5vw, 54px)", lineHeight: 1.05 }}
+        >
+          What&rsquo;s being prepared.
+        </h1>
+        <p className="mt-3 max-w-xl text-[15px]" style={{ color: "var(--ink-1)" }}>
+          So we don&rsquo;t pick the same piece twice. Tap any entry to see the artist&rsquo;s details.
+        </p>
 
-        <div className="mt-6 flex gap-3">
-          <Link href="/app/performances/mine" className="btn">Mine →</Link>
+        <div className="mt-7 flex flex-wrap gap-3">
+          <Link href="/app/performances/mine" className="btn">Your performance</Link>
+        </div>
+      </section>
+
+      <div className="rule mt-12" />
+
+      {/* ===== Performing ===== */}
+      <section className="pt-10">
+        <div className="flex items-baseline justify-between gap-4">
+          <h2 className="font-display text-2xl md:text-3xl">Performing</h2>
+          <span className="text-[11px] tracking-[0.3em] uppercase" style={{ color: "var(--ink-2)" }}>
+            {performing.length}
+          </span>
         </div>
 
-        <h2 className="font-display text-2xl mt-16">Pledged ({performing.length})</h2>
-        <ul className="mt-6 divide-y" style={{ borderColor: "var(--line)" }}>
+        <ul className="mt-5 divide-y" style={{ borderColor: "var(--line)" }}>
           {performing.map((p) => (
-            <li key={p.id} className="border-t first:border-t-0 py-5" style={{ borderColor: "var(--line)" }}>
-              <Link href={`/app/shishyas/${p.user_id}`} className="block">
-                <div className="font-display text-2xl">{p.composition_name ?? <span style={{ color: "var(--ink-2)" }}>(unnamed)</span>}</div>
+            <li key={p.id} className="border-t first:border-t-0 py-4" style={{ borderColor: "var(--line)" }}>
+              <Link href={`/app/shishyas/${p.user_id}`} className="block group">
+                <div className="font-display-soft text-lg md:text-xl" style={{ color: "var(--ink-0)" }}>
+                  {p.composition_name ?? <span style={{ color: "var(--ink-2)" }}>(unnamed piece)</span>}
+                </div>
                 <div className="text-sm mt-1" style={{ color: "var(--ink-1)" }}>
                   {p.profiles?.first_name} {p.profiles?.last_name}
-                  {" · "}
-                  {p.scale ? `${p.scale} (${SCALES.find(s => s.value === p.scale)?.marathi})` : "scale —"}
+                  {p.scale && (
+                    <>
+                      {" · "}
+                      <span style={{ color: "var(--ink-2)" }}>
+                        {p.scale} ({SCALES.find(s => s.value === p.scale)?.marathi})
+                      </span>
+                    </>
+                  )}
                 </div>
                 {p.instruments.length > 0 && (
                   <div className="text-xs mt-1" style={{ color: "var(--ink-2)" }}>
@@ -62,47 +90,72 @@ export default async function PerformancesPage() {
               </Link>
             </li>
           ))}
-          {performing.length === 0 && <li className="py-6" style={{ color: "var(--ink-2)" }}>None yet.</li>}
+          {performing.length === 0 && (
+            <li className="py-6 text-sm" style={{ color: "var(--ink-2)" }}>No one has pledged a piece yet.</li>
+          )}
         </ul>
+      </section>
 
-        <h2 className="font-display text-2xl mt-16">Not performing ({notPerforming.length})</h2>
-        <ul className="mt-4 space-y-1 text-sm" style={{ color: "var(--ink-1)" }}>
+      {/* ===== Not performing ===== */}
+      <section className="pt-12">
+        <div className="flex items-baseline justify-between gap-4">
+          <h2 className="font-display text-2xl md:text-3xl">Not performing</h2>
+          <span className="text-[11px] tracking-[0.3em] uppercase" style={{ color: "var(--ink-2)" }}>
+            {notPerforming.length}
+          </span>
+        </div>
+        <ul className="mt-5 space-y-1.5 text-sm" style={{ color: "var(--ink-1)" }}>
           {notPerforming.map((p) => (
-            <li key={p.id}>· {p.profiles?.first_name} {p.profiles?.last_name}</li>
+            <li key={p.id}>{p.profiles?.first_name} {p.profiles?.last_name}</li>
           ))}
           {notPerforming.length === 0 && <li style={{ color: "var(--ink-2)" }}>—</li>}
         </ul>
+      </section>
 
-        <h2 className="font-display text-2xl mt-16">Yet to decide ({pending.length})</h2>
-        <ul className="mt-4 space-y-1 text-sm" style={{ color: "var(--ink-1)" }}>
+      {/* ===== Yet to decide ===== */}
+      <section className="pt-12">
+        <div className="flex items-baseline justify-between gap-4">
+          <h2 className="font-display text-2xl md:text-3xl">Yet to decide</h2>
+          <span className="text-[11px] tracking-[0.3em] uppercase" style={{ color: "var(--ink-2)" }}>
+            {pending.length}
+          </span>
+        </div>
+        <ul className="mt-5 space-y-2 text-sm" style={{ color: "var(--ink-1)" }}>
           {pending.map((p) => (
-            <li key={p.id} className="flex items-center justify-between">
-              <Link href={`/app/shishyas/${p.id}`}>· {p.first_name} {p.last_name}</Link>
-              <NudgeLink id={p.id} />
+            <li key={p.id}>
+              <Link href={`/app/shishyas/${p.id}`} className="inline-flex items-center gap-2">
+                {p.first_name} {p.last_name}
+                <span className="text-[11px]" style={{ color: "var(--ink-2)" }}>view →</span>
+              </Link>
             </li>
           ))}
           {pending.length === 0 && <li style={{ color: "var(--ink-2)" }}>Everyone has chimed in.</li>}
         </ul>
+      </section>
 
-        <div className="mt-16 p-6 rounded-2xl" style={{ background: "var(--bg-1)", border: "1px solid var(--line)" }}>
-          <div className="text-xs tracking-[0.3em] uppercase mb-2" style={{ color: "var(--ink-2)" }}>Need to finalise with the guru?</div>
+      <div className="rule mt-16" />
+
+      {/* ===== Reach the guru ===== */}
+      <section className="pt-10 pb-6">
+        <div className="text-[11px] tracking-[0.32em] uppercase mb-4" style={{ color: "var(--ink-2)" }}>
+          Need to finalise with Saurabh Dada?
+        </div>
+        <div className="flex flex-wrap gap-3">
           <a
-            className="font-display text-2xl block"
+            className="btn"
             target="_blank"
             href={`https://wa.me/${(process.env.NEXT_PUBLIC_GURU_WHATSAPP ?? "").replace(/\D/g, "")}`}
           >
-            Chat with Saurabh Dada on WhatsApp →
+            WhatsApp Saurabh Dada
           </a>
-          <a className="text-sm mt-2 inline-block" style={{ color: "var(--ink-1)" }}
-             href={`tel:${process.env.NEXT_PUBLIC_GURU_PHONE ?? ""}`}>
-            or call: {process.env.NEXT_PUBLIC_GURU_PHONE ?? "—"}
+          <a
+            className="btn btn-ghost"
+            href={`tel:${process.env.NEXT_PUBLIC_GURU_PHONE ?? ""}`}
+          >
+            Call · {process.env.NEXT_PUBLIC_GURU_PHONE ?? "—"}
           </a>
         </div>
       </section>
     </PageTransition>
   );
-}
-
-function NudgeLink({ id }: { id: string }) {
-  return <Link href={`/app/shishyas/${id}`} className="text-xs" style={{ color: "var(--ink-2)" }}>view →</Link>;
 }

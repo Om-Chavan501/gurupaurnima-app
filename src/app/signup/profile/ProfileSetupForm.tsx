@@ -169,7 +169,7 @@ export default function ProfileSetupForm({ userId, email, initialFirst, initialL
 
       <div className="pt-2 flex items-center justify-end">
         <button className="btn" disabled={busy} type="submit">
-          {busy ? "Settling in…" : "Enter the aangan →"}
+          {busy ? "Saving…" : "Done — take me in"}
         </button>
       </div>
     </form>

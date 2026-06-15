@@ -65,9 +65,11 @@ export default function SignupPage() {
               initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.5 }}
             >
-              <div className="text-xs tracking-[0.4em] uppercase mb-3" style={{ color: "var(--ink-2)" }}>Step 1 of 2</div>
-              <h1 className="font-display text-4xl md:text-5xl">A few details to begin.</h1>
-              <p className="mt-3" style={{ color: "var(--ink-1)" }}>
+              <div className="text-[11px] tracking-[0.32em] uppercase mb-3" style={{ color: "var(--ink-2)" }}>Step 1 of 2</div>
+              <h1 className="font-display" style={{ fontSize: "clamp(34px, 5.5vw, 50px)", lineHeight: 1.05 }}>
+                A few details to begin.
+              </h1>
+              <p className="mt-3 text-[15px]" style={{ color: "var(--ink-1)" }}>
                 We&rsquo;ll send a one-time link to your email to verify it&rsquo;s really you.
               </p>
 
@@ -125,11 +127,13 @@ export default function SignupPage() {
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.6 }}
             >
-              <div className="text-xs tracking-[0.4em] uppercase mb-3" style={{ color: "var(--ink-2)" }}>Almost there</div>
-              <h1 className="font-display text-4xl md:text-5xl">Check your inbox.</h1>
-              <p className="mt-4 text-lg" style={{ color: "var(--ink-1)" }}>
-                We&rsquo;ve sent a link to <span style={{ color: "var(--accent-soft)" }}>{email}</span>.
-                Open it on this device to continue your journey.
+              <div className="text-[11px] tracking-[0.32em] uppercase mb-3" style={{ color: "var(--ink-2)" }}>Almost there</div>
+              <h1 className="font-display" style={{ fontSize: "clamp(34px, 5.5vw, 50px)", lineHeight: 1.05 }}>
+                Check your inbox.
+              </h1>
+              <p className="mt-4 text-[15px] md:text-base" style={{ color: "var(--ink-1)" }}>
+                A confirmation link is on its way to <span style={{ color: "var(--accent-soft)" }}>{email}</span>.
+                Open it on this device to continue.
               </p>
               <div className="mt-10 flex items-center gap-4">
                 <button onClick={() => setStep("form")} className="btn btn-ghost">← Wrong email?</button>

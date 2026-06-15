@@ -15,11 +15,20 @@ export default async function ShishyasPage() {
 
   return (
     <PageTransition>
-      <section className="pt-6">
-        <div className="text-xs tracking-[0.4em] uppercase mb-3" style={{ color: "var(--ink-2)" }}>
-          Sabha · {list.length}
+      <section className="pt-2 md:pt-6">
+        <div className="text-[11px] tracking-[0.32em] uppercase mb-3" style={{ color: "var(--ink-2)" }}>
+          The gathering · {list.length}
         </div>
-        <h1 className="font-display text-4xl md:text-5xl">All who have walked in.</h1>
+        <h1
+          className="font-display"
+          style={{ fontSize: "clamp(34px, 5.5vw, 54px)", lineHeight: 1.05 }}
+        >
+          Everyone who&rsquo;s signed in.
+        </h1>
+        <p className="mt-3 max-w-xl text-[15px]" style={{ color: "var(--ink-1)" }}>
+          Tap anyone to see details, WhatsApp them, or place a call.
+        </p>
+
         <ShishyaSearch list={list} />
       </section>
     </PageTransition>

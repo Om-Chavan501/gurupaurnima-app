@@ -12,9 +12,11 @@ export default async function ProfilePage() {
 
   return (
     <PageTransition>
-      <div className="pt-6 max-w-2xl">
-        <div className="text-xs tracking-[0.4em] uppercase mb-3" style={{ color: "var(--ink-2)" }}>You</div>
-        <h1 className="font-display text-4xl md:text-5xl">Refine your name-plate.</h1>
+      <div className="pt-2 md:pt-6 max-w-2xl">
+        <div className="text-[11px] tracking-[0.32em] uppercase mb-3" style={{ color: "var(--ink-2)" }}>Your details</div>
+        <h1 className="font-display" style={{ fontSize: "clamp(34px, 5.5vw, 50px)", lineHeight: 1.05 }}>
+          Edit your profile.
+        </h1>
         <ProfileEditForm profile={profile} />
       </div>
     </PageTransition>

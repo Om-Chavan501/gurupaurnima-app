@@ -53,7 +53,9 @@ export default async function ActivityPage() {
     <PageTransition>
       <section className="pt-6">
         <div className="text-xs tracking-[0.4em] uppercase mb-3" style={{ color: "var(--ink-2)" }}>Activity</div>
-        <h1 className="font-display text-4xl md:text-5xl">What changed in the aangan.</h1>
+        <h1 className="font-display" style={{ fontSize: "clamp(34px, 5.5vw, 54px)", lineHeight: 1.05 }}>
+          What changed lately.
+        </h1>
         <p className="mt-3" style={{ color: "var(--ink-1)" }}>
           Visible to gurus &amp; admin shishyas only. Most recent first.
         </p>

@@ -19,9 +19,14 @@ export default async function MyPerformance() {
 
   return (
     <PageTransition>
-      <div className="pt-6 max-w-2xl">
-        <div className="text-xs tracking-[0.4em] uppercase mb-3" style={{ color: "var(--ink-2)" }}>Your offering</div>
-        <h1 className="font-display text-4xl md:text-5xl">What will you sing?</h1>
+      <div className="pt-2 md:pt-6 max-w-2xl">
+        <div className="text-[11px] tracking-[0.32em] uppercase mb-3" style={{ color: "var(--ink-2)" }}>Your performance</div>
+        <h1 className="font-display" style={{ fontSize: "clamp(34px, 5.5vw, 50px)", lineHeight: 1.05 }}>
+          What will you sing or play?
+        </h1>
+        <p className="mt-3 text-[15px]" style={{ color: "var(--ink-1)" }}>
+          You can come back and change this any time.
+        </p>
         <PerformanceForm initial={initial} />
       </div>
     </PageTransition>
