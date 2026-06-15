@@ -42,13 +42,13 @@ export default async function AppHome() {
   (allPoll ?? []).forEach((r) => { if (r.date in tally) tally[r.date as ED]++; });
   const maxVotes = Math.max(...Object.values(tally), 1);
   const perfDone = perf !== null;
-  const itar = profile?.role === "itar";
+  const audience = profile?.role === "audience";
 
   // Compute primary "next step"
   let nextStep: { href: string; label: string; sub: string } | null = null;
   if (!pollSubmitted) {
     nextStep = { href: "/app/poll", label: "Tell us which night suits you", sub: "Step 1 of 2" };
-  } else if (!itar && !perfDone) {
+  } else if (!audience && !perfDone) {
     nextStep = { href: "/app/performances/mine", label: "Share your performance details", sub: "Step 2 of 2" };
   }
 
@@ -103,10 +103,10 @@ export default async function AppHome() {
             href="/app/poll"
             cta={pollSubmitted ? "Edit" : "Open"}
           />
-          {itar ? (
+          {audience ? (
             <StatusCard
               label="Performance"
-              value="Itar attendees don't perform"
+              value="Audience attendees don't perform"
               done
               href="/app/performances"
               cta="See list"

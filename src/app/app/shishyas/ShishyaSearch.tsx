@@ -6,7 +6,7 @@ import type { Profile } from "@/lib/types";
 
 export default function ShishyaSearch({ list }: { list: Profile[] }) {
   const [q, setQ] = useState("");
-  const [filter, setFilter] = useState<"all" | "shishya" | "itar" | "guru">("all");
+  const [filter, setFilter] = useState<"all" | "shishya" | "audience" | "guru">("all");
 
   const filtered = useMemo(() => {
     const term = q.trim().toLowerCase();
@@ -31,7 +31,7 @@ export default function ShishyaSearch({ list }: { list: Profile[] }) {
       </div>
 
       <div className="mt-5 flex flex-wrap gap-2">
-        {(["all", "shishya", "itar", "guru"] as const).map((f) => (
+        {(["all", "shishya", "audience", "guru"] as const).map((f) => (
           <button
             key={f}
             onClick={() => setFilter(f)}

@@ -6,7 +6,7 @@ create extension if not exists "pgcrypto";
 -- ============================================================
 -- profiles: one row per auth user
 -- ============================================================
-create type user_role as enum ('guru', 'shishya', 'itar');
+create type user_role as enum ('guru', 'shishya', 'audience');
 create type gender_t as enum ('male', 'female', 'other', 'prefer_not_to_say');
 create type event_date as enum ('2026-07-31', '2026-08-01', '2026-08-02');
 create type scale_t as enum ('A','A#','B','C','C#','D','D#','E','F','F#','G','G#');

@@ -2,8 +2,17 @@
 -- Phase 1: code-gated signup, invites, admin requests
 -- ============================================================
 
--- 1. Rename role: itar -> audience
-alter type user_role rename value 'itar' to 'audience';
+-- 1. Rename role: itar -> audience  (no-op on fresh installs that already have 'audience')
+do $$
+begin
+  if exists (
+    select 1 from pg_enum
+    where enumlabel = 'itar'
+      and enumtypid = 'user_role'::regtype
+  ) then
+    execute 'alter type user_role rename value ''itar'' to ''audience''';
+  end if;
+end $$;
 
 -- 2. Lineage on profiles
 alter table profiles
