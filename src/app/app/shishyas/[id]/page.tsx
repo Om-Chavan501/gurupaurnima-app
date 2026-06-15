@@ -22,7 +22,21 @@ export default async function ShishyaDetail({ params }: { params: Promise<{ id: 
   const { data: viewerRaw } = await supabase.from("profiles").select("role,is_admin").eq("id", user!.id).single();
   const viewer = viewerRaw as { role: string; is_admin: boolean };
   const isAdminOrGuru = viewer.role === "guru" || viewer.is_admin;
+  const viewerIsGuru = viewer.role === "guru";
   const isSelf = user!.id === profile.id;
+
+  // Inviter (for lineage display) — fetch only if there is one
+  let inviter: { id: string; first_name: string; last_name: string } | null = null;
+  if (profile.invited_by) {
+    const { data: invRaw } = await supabase
+      .from("profiles")
+      .select("id, first_name, last_name")
+      .eq("id", profile.invited_by)
+      .maybeSingle();
+    inviter = invRaw ?? null;
+  }
+  const isInviter = !!inviter && user!.id === inviter.id;
+  const canSeeLineage = isAdminOrGuru || isSelf || isInviter;
 
   const phone = profile.whatsapp_number ? `${profile.whatsapp_country_code ?? ""}${profile.whatsapp_number}` : null;
   const waUrl = phone ? `https://wa.me/${phone.replace(/\D/g, "")}` : null;
@@ -55,11 +69,19 @@ export default async function ShishyaDetail({ params }: { params: Promise<{ id: 
           <Row label="WhatsApp" value={phone ?? "—"} />
           <Row label="Date of birth" value={profile.dob ?? "—"} />
           <Row label="Gender" value={profile.gender?.replace(/_/g, " ") ?? "—"} />
-          <Row label="With Saurabh Dada" value={
-            profile.years_with_guru || profile.months_with_guru
-              ? `${profile.years_with_guru ?? 0}y ${profile.months_with_guru ?? 0}m`
-              : "—"
-          } />
+          {profile.role === "shishya" && (
+            <Row label="With Saurabh Dada" value={
+              profile.years_with_guru || profile.months_with_guru
+                ? `${profile.years_with_guru ?? 0}y ${profile.months_with_guru ?? 0}m`
+                : "—"
+            } />
+          )}
+          {canSeeLineage && inviter && (
+            <Row
+              label="Invited by"
+              value={`${inviter.first_name} ${inviter.last_name}${profile.invited_as ? ` · as ${profile.invited_as}` : ""}`}
+            />
+          )}
         </dl>
 
         <div className="mt-10 flex gap-3">
@@ -67,7 +89,7 @@ export default async function ShishyaDetail({ params }: { params: Promise<{ id: 
           {telUrl && <a className="btn btn-ghost" href={telUrl}>Call</a>}
         </div>
 
-        <div className="mt-16 grid md:grid-cols-2 gap-10">
+        <div className={`mt-16 grid gap-10 ${profile.role === "shishya" ? "md:grid-cols-2" : "md:grid-cols-1"}`}>
           <div>
             <div className="text-xs tracking-[0.3em] uppercase" style={{ color: "var(--ink-2)" }}>Suitable nights</div>
             <div className="mt-3 font-display text-2xl">
@@ -76,6 +98,7 @@ export default async function ShishyaDetail({ params }: { params: Promise<{ id: 
                 : <span style={{ color: "var(--ink-2)" }}>Not chosen yet</span>}
             </div>
           </div>
+          {profile.role === "shishya" && (
           <div>
             <div className="text-xs tracking-[0.3em] uppercase" style={{ color: "var(--ink-2)" }}>Composition</div>
             {perf?.will_perform ? (
@@ -96,6 +119,7 @@ export default async function ShishyaDetail({ params }: { params: Promise<{ id: 
               </div>
             )}
           </div>
+          )}
         </div>
 
         {(isAdminOrGuru || isSelf) && (
@@ -104,7 +128,15 @@ export default async function ShishyaDetail({ params }: { params: Promise<{ id: 
             <div className="flex flex-wrap gap-3">
               {isSelf && <Link href="/app/profile" className="btn btn-ghost">Edit my profile</Link>}
               {isSelf && <Link href="/app/performances/mine" className="btn btn-ghost">Edit my composition</Link>}
-              {isAdminOrGuru && <AdminActions targetId={profile.id} isVerified={profile.is_verified} isAdmin={profile.is_admin} />}
+              {isAdminOrGuru && (
+                <AdminActions
+                  targetId={profile.id}
+                  isVerified={profile.is_verified}
+                  isAdmin={profile.is_admin}
+                  role={profile.role}
+                  viewerIsGuru={viewerIsGuru}
+                />
+              )}
             </div>
           </div>
         )}
