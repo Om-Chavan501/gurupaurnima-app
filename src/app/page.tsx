@@ -84,7 +84,7 @@ export default async function Home() {
                 {
                   n: "03",
                   title: "If you&rsquo;re performing, share your piece",
-                  body: "The composition, the scale, and what you&rsquo;ll need on stage. So we don&rsquo;t pick the same piece twice.",
+                  body: "The composition, the scale, and what you'll need on stage. So we don't pick the same piece twice.",
                 },
               ].map((s) => (
                 <li key={s.n} className="grid grid-cols-[auto_1fr] gap-x-5 items-baseline">
