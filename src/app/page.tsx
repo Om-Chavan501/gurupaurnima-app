@@ -2,10 +2,18 @@ import Link from "next/link";
 import PageTransition from "@/components/PageTransition";
 import { EVENT_DATES } from "@/lib/types";
 import { createClient } from "@/lib/supabase/server";
+import { getT } from "@/lib/i18n-server";
 
 export default async function Home() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
+  const t = await getT();
+
+  const steps = [
+    { n: "01", title: t("landing.how.step1.title"), body: t("landing.how.step1.body") },
+    { n: "02", title: t("landing.how.step2.title"), body: t("landing.how.step2.body") },
+    { n: "03", title: t("landing.how.step3.title"), body: t("landing.how.step3.body") },
+  ];
 
   return (
     <PageTransition>
@@ -14,26 +22,25 @@ export default async function Home() {
         <div className="grid md:grid-cols-12 gap-y-8 md:gap-x-10 items-end">
           <div className="md:col-span-8">
             <p className="text-[11px] tracking-[0.32em] uppercase mb-5" style={{ color: "var(--ink-2)" }}>
-              An invitation
+              {t("landing.kicker")}
             </p>
             <h1
               className="font-display"
               style={{ fontSize: "clamp(40px, 7vw, 76px)", color: "var(--ink-0)", lineHeight: 1.02 }}
             >
-              A quiet place to plan<br />the evening together.
+              {t("landing.h1.line1")}<br />{t("landing.h1.line2")}
             </h1>
             <p className="mt-6 max-w-xl text-[15px] md:text-base" style={{ color: "var(--ink-1)" }}>
-              This site is for Saurabh Dada and his shishyas to coordinate Gurupaurnima 2026 — which night
-              suits each of us, what we&rsquo;d like to perform, and who&rsquo;ll be there. Three small things.
+              {t("landing.intro")}
             </p>
 
             <div className="mt-9 flex flex-wrap items-center gap-3">
               {user ? (
-                <Link href="/app" className="btn">Continue</Link>
+                <Link href="/app" className="btn">{t("common.continue")}</Link>
               ) : (
                 <>
-                  <Link href="/signup" className="btn">Join</Link>
-                  <Link href="/login" className="btn btn-ghost">I&rsquo;ve been here before</Link>
+                  <Link href="/signup" className="btn">{t("common.join")}</Link>
+                  <Link href="/login" className="btn btn-ghost">{t("common.alreadyHere")}</Link>
                 </>
               )}
             </div>
@@ -41,17 +48,17 @@ export default async function Home() {
 
           <aside className="md:col-span-4 md:pl-6 md:border-l" style={{ borderColor: "var(--line)" }}>
             <div className="text-[11px] tracking-[0.32em] uppercase mb-4" style={{ color: "var(--ink-2)" }}>
-              Possible dates
+              {t("landing.possibleDates")}
             </div>
             <ul className="space-y-3">
               {EVENT_DATES.map((d) => (
                 <li key={d.value} className="font-display-soft text-lg" style={{ color: "var(--ink-0)" }}>
-                  {d.label}
+                  {t(`date.${d.value}`)}
                 </li>
               ))}
             </ul>
             <p className="mt-4 text-xs" style={{ color: "var(--ink-2)" }}>
-              You&rsquo;ll pick the one(s) that suit you after signing in.
+              {t("landing.pickAfterSignin")}
             </p>
           </aside>
         </div>
@@ -64,35 +71,17 @@ export default async function Home() {
         <div className="grid md:grid-cols-12 gap-y-8 md:gap-x-10">
           <div className="md:col-span-3">
             <div className="text-[11px] tracking-[0.32em] uppercase" style={{ color: "var(--ink-2)" }}>
-              How it works
+              {t("landing.how.kicker")}
             </div>
-            <p className="mt-2 text-sm" style={{ color: "var(--ink-2)" }}>Three short steps.</p>
+            <p className="mt-2 text-sm" style={{ color: "var(--ink-2)" }}>{t("landing.how.sub")}</p>
           </div>
           <div className="md:col-span-9">
             <ol className="space-y-7">
-              {[
-                {
-                  n: "01",
-                  title: "Sign up with a code",
-                  body: "Shishyas use today's 6-digit code (any admin shares it on request). Audience uses an invite code from a verified shishya or the guru. No code? Reach out to an admin from the signup screen.",
-                },
-                {
-                  n: "02",
-                  title: "Tell us which night suits you",
-                  body: "Three possible dates. Pick one or more, or let us know none of them work.",
-                },
-                {
-                  n: "03",
-                  title: "If you're performing, share your piece",
-                  body: "The composition, the scale, and what you'll need on stage. So we don't pick the same piece twice.",
-                },
-              ].map((s) => (
+              {steps.map((s) => (
                 <li key={s.n} className="grid grid-cols-[auto_1fr] gap-x-5 items-baseline">
                   <span className="section-index">{s.n}</span>
                   <div>
-                    <div className="font-display text-2xl md:text-3xl">
-                      {s.title}
-                    </div>
+                    <div className="font-display text-2xl md:text-3xl">{s.title}</div>
                     <p className="mt-1.5 text-[15px]" style={{ color: "var(--ink-1)" }}>{s.body}</p>
                   </div>
                 </li>
@@ -109,9 +98,9 @@ export default async function Home() {
         <div className="grid md:grid-cols-12 gap-y-8 md:gap-x-10">
           <div className="md:col-span-3">
             <div className="text-[11px] tracking-[0.32em] uppercase" style={{ color: "var(--ink-2)" }}>
-              Who can join
+              {t("landing.access.kicker")}
             </div>
-            <p className="mt-2 text-sm" style={{ color: "var(--ink-2)" }}>Two paths in.</p>
+            <p className="mt-2 text-sm" style={{ color: "var(--ink-2)" }}>{t("landing.access.sub")}</p>
           </div>
           <div className="md:col-span-9 grid md:grid-cols-2 gap-5">
             <div
@@ -119,12 +108,11 @@ export default async function Home() {
               style={{ background: "color-mix(in oklab, var(--ink-0) 3%, transparent)", border: "1px solid var(--line)" }}
             >
               <div className="text-[10px] tracking-[0.3em] uppercase" style={{ color: "var(--ink-2)" }}>
-                Shishya
+                {t("landing.access.shishya.kicker")}
               </div>
-              <div className="font-display text-2xl mt-1">A student of Saurabh Dada</div>
+              <div className="font-display text-2xl mt-1">{t("landing.access.shishya.title")}</div>
               <p className="mt-2 text-[15px]" style={{ color: "var(--ink-1)" }}>
-                You&rsquo;ll need today&rsquo;s 6-digit shishya code. It changes each day at midnight (IST).
-                Ask any admin on WhatsApp and they&rsquo;ll share it.
+                {t("landing.access.shishya.body")}
               </p>
             </div>
             <div
@@ -132,12 +120,11 @@ export default async function Home() {
               style={{ background: "color-mix(in oklab, var(--ink-0) 3%, transparent)", border: "1px solid var(--line)" }}
             >
               <div className="text-[10px] tracking-[0.3em] uppercase" style={{ color: "var(--ink-2)" }}>
-                Audience · श्रोता
+                {t("landing.access.audience.kicker")}
               </div>
-              <div className="font-display text-2xl mt-1">Coming to listen</div>
+              <div className="font-display text-2xl mt-1">{t("landing.access.audience.title")}</div>
               <p className="mt-2 text-[15px]" style={{ color: "var(--ink-1)" }}>
-                You&rsquo;ll need a 6-character invite code from a verified shishya or the guru.
-                Codes last 24 hours. Once you&rsquo;re in, you&rsquo;ll see the concert details.
+                {t("landing.access.audience.body")}
               </p>
             </div>
           </div>
@@ -158,12 +145,8 @@ export default async function Home() {
             </p>
           </div>
           <div className="md:col-span-5 md:text-right">
-            <p className="text-xs" style={{ color: "var(--ink-2)" }}>
-              Made by shishyas, for the program.
-            </p>
-            <p className="mt-1 text-xs" style={{ color: "var(--ink-2)" }}>
-              Choose a raag from the menu for a different mood.
-            </p>
+            <p className="text-xs" style={{ color: "var(--ink-2)" }}>{t("landing.footnoteMade")}</p>
+            <p className="mt-1 text-xs" style={{ color: "var(--ink-2)" }}>{t("landing.footnoteRaag")}</p>
           </div>
         </div>
       </section>

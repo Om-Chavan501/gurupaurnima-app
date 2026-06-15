@@ -5,8 +5,10 @@ import { Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import PageTransition from "@/components/PageTransition";
 import { createClient } from "@/lib/supabase/client";
+import { useT } from "@/components/LocaleProvider";
 
 export default function ResetPage() {
+  const t = useT();
   const router = useRouter();
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -29,11 +31,11 @@ export default function ResetPage() {
   return (
     <PageTransition>
       <div className="max-w-md mx-auto pt-10">
-        <div className="text-xs tracking-[0.4em] uppercase mb-3" style={{ color: "var(--ink-2)" }}>New password</div>
-        <h1 className="font-display text-4xl md:text-5xl">Set a fresh one.</h1>
+        <div className="text-xs tracking-[0.4em] uppercase mb-3" style={{ color: "var(--ink-2)" }}>{t("reset.kicker")}</div>
+        <h1 className="font-display text-4xl md:text-5xl">{t("reset.h1")}</h1>
         <form onSubmit={submit} className="mt-10 space-y-7">
           <div className="field-group">
-            <label>New password</label>
+            <label>{t("reset.newPwd")}</label>
             <div className="relative">
               <input className="field pr-10" type={show ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} />
               <button type="button" onClick={() => setShow((v) => !v)} className="absolute right-2 top-1/2 -translate-y-1/2 p-1" style={{ color: "var(--ink-2)" }} aria-label="Show password">
@@ -42,11 +44,11 @@ export default function ResetPage() {
             </div>
           </div>
           <div className="field-group">
-            <label>Confirm</label>
+            <label>{t("reset.confirm")}</label>
             <input className="field" type={show ? "text" : "password"} value={confirm} onChange={(e) => setConfirm(e.target.value)} />
           </div>
           <div className="flex justify-end">
-            <button className="btn" disabled={busy}>{busy ? "…" : "Save →"}</button>
+            <button className="btn" disabled={busy}>{busy ? "…" : t("reset.save")}</button>
           </div>
         </form>
       </div>
