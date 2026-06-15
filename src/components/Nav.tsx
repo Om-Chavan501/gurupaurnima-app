@@ -14,9 +14,10 @@ type Props = {
   profilePicUrl?: string | null;
   showBell?: boolean;
   unreadCount?: number;
+  showAdmin?: boolean;
 };
 
-export default function Nav({ signedIn, firstName, profilePicUrl, showBell, unreadCount = 0 }: Props) {
+export default function Nav({ signedIn, firstName, profilePicUrl, showBell, unreadCount = 0, showAdmin }: Props) {
   const path = usePathname();
   const inApp = path?.startsWith("/app");
   const [menuOpen, setMenuOpen] = useState(false);
@@ -35,6 +36,7 @@ export default function Nav({ signedIn, firstName, profilePicUrl, showBell, unre
     { href: "/app/poll", label: "Dates" },
     { href: "/app/performances", label: "Compositions" },
     { href: "/app/shishyas", label: "Shishyas" },
+    ...(showAdmin ? [{ href: "/app/admin", label: "Admin" }] : []),
   ];
 
   const publicLinks = [

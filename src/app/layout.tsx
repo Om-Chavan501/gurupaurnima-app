@@ -68,7 +68,7 @@ export default async function RootLayout({
         <RaagProvider>
           <Backdrop />
           <Veil />
-          <Nav signedIn={!!user} firstName={firstName} profilePicUrl={profilePicUrl} showBell={showBell} unreadCount={unreadCount} />
+          <Nav signedIn={!!user} firstName={firstName} profilePicUrl={profilePicUrl} showBell={showBell} unreadCount={unreadCount} showAdmin={showBell} />
           <AuthErrorCatcher />
           <main className="container-x py-8 md:py-12">{children}</main>
           <Toaster
