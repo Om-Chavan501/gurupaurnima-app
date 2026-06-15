@@ -7,10 +7,17 @@ import { Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import PageTransition from "@/components/PageTransition";
 import { createClient } from "@/lib/supabase/client";
+import { checkShishyaCode } from "@/lib/actions";
+
+type Step = "role" | "code" | "form" | "sent";
+type Role = "shishya" | "audience";
 
 export default function SignupPage() {
   const router = useRouter();
-  const [step, setStep] = useState<"form" | "sent">("form");
+  const [step, setStep] = useState<Step>("role");
+  const [role, setRole] = useState<Role>("shishya");
+  const [code, setCode] = useState("");
+  const [invitedBy, setInvitedBy] = useState<string | null>(null);
   const [first, setFirst] = useState("");
   const [last, setLast] = useState("");
   const [email, setEmail] = useState("");
@@ -20,7 +27,43 @@ export default function SignupPage() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [busy, setBusy] = useState(false);
 
-  async function submit(e: React.FormEvent) {
+  function pickRole(r: Role) {
+    setRole(r);
+    setCode("");
+    setInvitedBy(null);
+    setStep("code");
+  }
+
+  async function submitCode(e: React.FormEvent) {
+    e.preventDefault();
+    if (!code.trim()) {
+      toast.error("Please enter the code");
+      return;
+    }
+    setBusy(true);
+    if (role === "shishya") {
+      const r = await checkShishyaCode(code.trim());
+      setBusy(false);
+      if (!r.ok) {
+        toast.error("That doesn't look like today's code");
+        return;
+      }
+    } else {
+      const supabase = createClient();
+      const { data, error } = await supabase.rpc("resolve_invite_code", {
+        p_code: code.trim().toUpperCase(),
+      });
+      setBusy(false);
+      if (error || !data) {
+        toast.error("Invite code is invalid or has expired");
+        return;
+      }
+      setInvitedBy(data as string);
+    }
+    setStep("form");
+  }
+
+  async function submitDetails(e: React.FormEvent) {
     e.preventDefault();
     if (!first || !last || !email || !password || !confirm) {
       toast.error("All fields are required");
@@ -41,7 +84,13 @@ export default function SignupPage() {
       password,
       options: {
         emailRedirectTo: `${window.location.origin}/auth/callback?next=/signup/profile`,
-        data: { first_name: first, last_name: last },
+        data: {
+          first_name: first,
+          last_name: last,
+          intended_role: role,
+          invited_by: invitedBy,
+          invite_code: role === "audience" ? code.trim().toUpperCase() : null,
+        },
       },
     });
     setBusy(false);
@@ -49,23 +98,156 @@ export default function SignupPage() {
       toast.error(error.message);
       return;
     }
-    sessionStorage.setItem("gp.signup.email", email);
-    sessionStorage.setItem("gp.signup.first", first);
-    sessionStorage.setItem("gp.signup.last", last);
     setStep("sent");
   }
 
+  const adminName = process.env.NEXT_PUBLIC_ADMIN_NAME || "an admin";
+  const adminWa = (process.env.NEXT_PUBLIC_ADMIN_WHATSAPP || "").replace(/\D/g, "");
+  const adminPhone = process.env.NEXT_PUBLIC_ADMIN_PHONE || "";
+  const waMessage =
+    role === "shishya"
+      ? "Namaskar, I am trying to sign up as a shishya for Saurabh Dada's Gurupaurnima 2026 but I don't have today's code. Could you share it with me?"
+      : "Namaskar, I would like to attend Saurabh Dada's Gurupaurnima 2026 as audience. Could you share an invite code with me?";
+
   return (
     <PageTransition>
-      <div className="max-w-md mx-auto pt-8">
+      <div className="max-w-md mx-auto pt-4 md:pt-8">
         <AnimatePresence mode="wait">
-          {step === "form" ? (
+          {/* ===================================================== ROLE */}
+          {step === "role" && (
+            <motion.div
+              key="role"
+              initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.4 }}
+            >
+              <div className="text-[11px] tracking-[0.32em] uppercase mb-3" style={{ color: "var(--ink-2)" }}>
+                Step 1 of 3
+              </div>
+              <h1 className="font-display" style={{ fontSize: "clamp(34px, 5.5vw, 50px)", lineHeight: 1.05 }}>
+                How are you joining?
+              </h1>
+              <p className="mt-3 text-[15px]" style={{ color: "var(--ink-1)" }}>
+                Both paths need a small code. Pick whichever describes you.
+              </p>
+
+              <div className="mt-8 space-y-3">
+                <button
+                  onClick={() => pickRole("shishya")}
+                  className="w-full text-left p-5 rounded-2xl transition group"
+                  style={{ background: "color-mix(in oklab, var(--ink-0) 3%, transparent)", border: "1px solid var(--line)" }}
+                >
+                  <div className="text-[10px] tracking-[0.3em] uppercase" style={{ color: "var(--ink-2)" }}>
+                    A student of Saurabh Dada
+                  </div>
+                  <div className="font-display text-2xl mt-1">Shishya</div>
+                  <p className="mt-1.5 text-sm" style={{ color: "var(--ink-1)" }}>
+                    You&rsquo;ll need today&rsquo;s shishya code, shared by an admin.
+                  </p>
+                </button>
+
+                <button
+                  onClick={() => pickRole("audience")}
+                  className="w-full text-left p-5 rounded-2xl transition group"
+                  style={{ background: "color-mix(in oklab, var(--ink-0) 3%, transparent)", border: "1px solid var(--line)" }}
+                >
+                  <div className="text-[10px] tracking-[0.3em] uppercase" style={{ color: "var(--ink-2)" }}>
+                    Coming as audience
+                  </div>
+                  <div className="font-display text-2xl mt-1">Audience · श्रोता</div>
+                  <p className="mt-1.5 text-sm" style={{ color: "var(--ink-1)" }}>
+                    You&rsquo;ll need an invite code from a shishya or the guru.
+                  </p>
+                </button>
+              </div>
+
+              <p className="mt-8 text-sm" style={{ color: "var(--ink-2)" }}>
+                Already with us? <Link href="/login" className="btn-link">Sign in</Link>
+              </p>
+              <Link href="/" className="mt-4 inline-block btn-link text-sm">← Home</Link>
+            </motion.div>
+          )}
+
+          {/* ===================================================== CODE */}
+          {step === "code" && (
+            <motion.div
+              key="code"
+              initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.4 }}
+            >
+              <div className="text-[11px] tracking-[0.32em] uppercase mb-3" style={{ color: "var(--ink-2)" }}>
+                Step 2 of 3 · {role === "shishya" ? "Shishya" : "Audience"}
+              </div>
+              <h1 className="font-display" style={{ fontSize: "clamp(34px, 5.5vw, 50px)", lineHeight: 1.05 }}>
+                {role === "shishya" ? "Today's shishya code." : "Your invite code."}
+              </h1>
+              <p className="mt-3 text-[15px]" style={{ color: "var(--ink-1)" }}>
+                {role === "shishya"
+                  ? "It's a 6-digit number that changes every day at midnight IST. Any admin can share it."
+                  : "It's a 6-character code from someone who invited you. Each code is good for 24 hours."}
+              </p>
+
+              <form onSubmit={submitCode} className="mt-8 space-y-6">
+                <div className="field-group">
+                  <label>{role === "shishya" ? "6-digit code" : "Invite code"}</label>
+                  <input
+                    className="field"
+                    value={code}
+                    onChange={(e) => setCode(e.target.value)}
+                    autoFocus
+                    inputMode={role === "shishya" ? "numeric" : "text"}
+                    placeholder={role === "shishya" ? "● ● ● ● ● ●" : "X X X X X X"}
+                    style={{ fontFamily: "var(--font-mono, ui-monospace, monospace)", letterSpacing: "0.3em" }}
+                    maxLength={role === "shishya" ? 6 : 6}
+                  />
+                </div>
+
+                <div className="flex items-center justify-between pt-2">
+                  <button type="button" onClick={() => setStep("role")} className="btn-link text-sm">← Back</button>
+                  <button className="btn" disabled={busy}>{busy ? "…" : "Continue"}</button>
+                </div>
+              </form>
+
+              {/* No-code escape hatch */}
+              <div
+                className="mt-10 p-4 rounded-2xl"
+                style={{ background: "color-mix(in oklab, var(--ink-0) 3%, transparent)", border: "1px solid var(--line)" }}
+              >
+                <div className="text-[10px] tracking-[0.3em] uppercase mb-1.5" style={{ color: "var(--ink-2)" }}>
+                  Don&rsquo;t have a code?
+                </div>
+                <p className="text-sm" style={{ color: "var(--ink-1)" }}>
+                  Reach out to {adminName} — they&rsquo;ll share one with you.
+                </p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {adminWa && (
+                    <a
+                      href={`https://wa.me/${adminWa}?text=${encodeURIComponent(waMessage)}`}
+                      target="_blank"
+                      className="btn text-sm py-2 px-4"
+                    >
+                      WhatsApp {adminName}
+                    </a>
+                  )}
+                  {adminPhone && (
+                    <a href={`tel:${adminPhone}`} className="btn btn-ghost text-sm py-2 px-4">
+                      Call · {adminPhone}
+                    </a>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {/* ===================================================== FORM */}
+          {step === "form" && (
             <motion.div
               key="form"
               initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.4 }}
             >
-              <div className="text-[11px] tracking-[0.32em] uppercase mb-3" style={{ color: "var(--ink-2)" }}>Step 1 of 2</div>
+              <div className="text-[11px] tracking-[0.32em] uppercase mb-3" style={{ color: "var(--ink-2)" }}>
+                Step 3 of 3 · {role === "shishya" ? "Shishya" : "Audience"}
+              </div>
               <h1 className="font-display" style={{ fontSize: "clamp(34px, 5.5vw, 50px)", lineHeight: 1.05 }}>
                 A few details to begin.
               </h1>
@@ -73,7 +255,7 @@ export default function SignupPage() {
                 We&rsquo;ll send a one-time link to your email to verify it&rsquo;s really you.
               </p>
 
-              <form onSubmit={submit} className="mt-10 space-y-7">
+              <form onSubmit={submitDetails} className="mt-8 space-y-6">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="field-group">
                     <label>First name</label>
@@ -108,7 +290,7 @@ export default function SignupPage() {
                 </div>
 
                 <div className="pt-2 flex items-center justify-between">
-                  <Link href="/" className="btn-link text-sm">← Back</Link>
+                  <button type="button" onClick={() => setStep("code")} className="btn-link text-sm">← Back</button>
                   <button className="btn" type="submit" disabled={busy}>
                     {busy ? "Sending…" : "Send link →"}
                   </button>
@@ -119,13 +301,14 @@ export default function SignupPage() {
                 </p>
               </form>
             </motion.div>
-          ) : (
+          )}
+
+          {/* ===================================================== SENT */}
+          {step === "sent" && (
             <motion.div
               key="sent"
-              initial={{ opacity: 0, y: 8, filter: "blur(8px)" }}
-              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.6 }}
+              initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.5 }}
             >
               <div className="text-[11px] tracking-[0.32em] uppercase mb-3" style={{ color: "var(--ink-2)" }}>Almost there</div>
               <h1 className="font-display" style={{ fontSize: "clamp(34px, 5.5vw, 50px)", lineHeight: 1.05 }}>
@@ -148,12 +331,9 @@ export default function SignupPage() {
                   Resend link
                 </button>
               </div>
-              <p className="mt-10 text-sm" style={{ color: "var(--ink-2)" }}>
-                Once you click the link you&rsquo;ll land here automatically.
-              </p>
               <button
                 onClick={() => router.push("/login")}
-                className="mt-6 btn-link text-sm"
+                className="mt-10 btn-link text-sm"
               >
                 Already verified? Sign in →
               </button>

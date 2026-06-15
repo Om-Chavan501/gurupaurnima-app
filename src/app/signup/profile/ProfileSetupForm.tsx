@@ -12,14 +12,20 @@ type Props = {
   email: string;
   initialFirst: string;
   initialLast: string;
+  intendedRole: "shishya" | "audience";
+  invitedBy: string | null;
+  inviteCode: string | null;
 };
 
-export default function ProfileSetupForm({ userId, email, initialFirst, initialLast }: Props) {
+export default function ProfileSetupForm({
+  userId, email, initialFirst, initialLast, intendedRole, invitedBy, inviteCode,
+}: Props) {
   const router = useRouter();
   const [first, setFirst] = useState(initialFirst);
   const [last, setLast] = useState(initialLast);
   const [dob, setDob] = useState("");
-  const [role, setRole] = useState<Role>("shishya");
+  // Role is fixed at signup — comes from the gating step. No picker here.
+  const role: Role = intendedRole;
   const [gender, setGender] = useState<Gender | "">("");
   const [country, setCountry] = useState(DEFAULT_COUNTRY.code);
   const [phone, setPhone] = useState("");
@@ -62,14 +68,33 @@ export default function ProfileSetupForm({ userId, email, initialFirst, initialL
       role,
       whatsapp_country_code: dial,
       whatsapp_number: phone,
-      years_with_guru: years ? Number(years) : null,
-      months_with_guru: months ? Number(months) : null,
+      years_with_guru: role === "shishya" && years ? Number(years) : null,
+      months_with_guru: role === "shishya" && months ? Number(months) : null,
       profile_pic_url,
       profile_completed: true,
+      invited_by: invitedBy,
+      invited_as: role,
     });
 
+    if (error) { setBusy(false); toast.error(error.message); return; }
+
+    // Audience: mark the invite code as redeemed (best-effort).
+    if (role === "audience" && inviteCode) {
+      await supabase.rpc("mark_invite_redeemed", { p_code: inviteCode });
+    }
+
+    // Surface in admin activity feed as a fresh join via invite.
+    if (invitedBy) {
+      await supabase.from("activity_log").insert({
+        actor_id: userId,
+        action: "signup.invite_redeemed",
+        target_table: "profiles",
+        target_id: userId,
+        payload: { invited_by: invitedBy, invite_code: inviteCode, role },
+      });
+    }
+
     setBusy(false);
-    if (error) { toast.error(error.message); return; }
     toast.success("Welcome.");
     router.push("/app");
   }
@@ -93,23 +118,9 @@ export default function ProfileSetupForm({ userId, email, initialFirst, initialL
           <input className="field" type="date" value={dob} onChange={(e) => setDob(e.target.value)} />
         </div>
         <div className="field-group">
-          <label>I am a *</label>
-          <div className="flex gap-3 pt-2">
-            {(["shishya", "itar"] as Role[]).map((r) => (
-              <button
-                key={r}
-                type="button"
-                onClick={() => setRole(r)}
-                className="px-4 py-2 rounded-full text-sm transition"
-                style={{
-                  border: "1px solid var(--line)",
-                  background: role === r ? "var(--accent)" : "transparent",
-                  color: role === r ? "var(--bg-0)" : "var(--ink-1)",
-                }}
-              >
-                {r === "shishya" ? "Shishya" : "Itar (other)"}
-              </button>
-            ))}
+          <label>Joining as</label>
+          <div className="pt-2 text-base" style={{ color: "var(--ink-0)" }}>
+            {role === "shishya" ? "Shishya" : "Audience · श्रोता"}
           </div>
         </div>
       </div>
@@ -149,13 +160,15 @@ export default function ProfileSetupForm({ userId, email, initialFirst, initialL
         </div>
       </div>
 
-      <div className="field-group">
-        <label>How long with Saurabh Dada? (optional)</label>
-        <div className="flex gap-3">
-          <input className="field" type="number" min="0" placeholder="Years" value={years} onChange={(e) => setYears(e.target.value)} />
-          <input className="field" type="number" min="0" max="11" placeholder="Months" value={months} onChange={(e) => setMonths(e.target.value)} />
+      {role === "shishya" && (
+        <div className="field-group">
+          <label>How long with Saurabh Dada? (optional)</label>
+          <div className="flex gap-3">
+            <input className="field" type="number" min="0" placeholder="Years" value={years} onChange={(e) => setYears(e.target.value)} />
+            <input className="field" type="number" min="0" max="11" placeholder="Months" value={months} onChange={(e) => setMonths(e.target.value)} />
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="field-group">
         <label>Profile picture (optional)</label>
