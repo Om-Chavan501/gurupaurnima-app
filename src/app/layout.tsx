@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Inter } from "next/font/google";
+import { Cormorant_Garamond, Inter, Tiro_Devanagari_Marathi, Hind } from "next/font/google";
 import "./globals.css";
 import Backdrop from "@/components/Backdrop";
 import Veil from "@/components/Veil";
 import Nav from "@/components/Nav";
 import { RaagProvider } from "@/components/RaagProvider";
+import { LocaleProvider } from "@/components/LocaleProvider";
 import { Toaster } from "sonner";
 import { createClient } from "@/lib/supabase/server";
 import AuthErrorCatcher from "@/components/AuthErrorCatcher";
+import { getLocale } from "@/lib/i18n-server";
 
 const display = Cormorant_Garamond({
   variable: "--font-display",
@@ -18,6 +20,20 @@ const display = Cormorant_Garamond({
 const sans = Inter({
   variable: "--font-sans",
   subsets: ["latin"],
+});
+
+// Marathi: calligraphic serif for display, humanist sans for body
+const displayMr = Tiro_Devanagari_Marathi({
+  variable: "--font-display-mr",
+  subsets: ["devanagari", "latin"],
+  weight: ["400"],
+  style: ["normal", "italic"],
+});
+
+const sansMr = Hind({
+  variable: "--font-sans-mr",
+  subsets: ["devanagari", "latin"],
+  weight: ["300", "400", "500"],
 });
 
 export const metadata: Metadata = {
@@ -37,6 +53,7 @@ export default async function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
+  const locale = await getLocale();
 
   let firstName: string | null = null;
   let profilePicUrl: string | null = null;
@@ -63,26 +80,28 @@ export default async function RootLayout({
   }
 
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${display.variable} ${sans.variable}`}>
-        <RaagProvider>
-          <Backdrop />
-          <Veil />
-          <Nav signedIn={!!user} firstName={firstName} profilePicUrl={profilePicUrl} showBell={showBell} unreadCount={unreadCount} showAdmin={showBell} />
-          <AuthErrorCatcher />
-          <main className="container-x py-8 md:py-12">{children}</main>
-          <Toaster
-            theme="dark"
-            position="bottom-center"
-            toastOptions={{
-              style: {
-                background: "var(--bg-1)",
-                color: "var(--ink-0)",
-                border: "1px solid var(--line)",
-              },
-            }}
-          />
-        </RaagProvider>
+    <html lang={locale} data-locale={locale} suppressHydrationWarning>
+      <body className={`${display.variable} ${sans.variable} ${displayMr.variable} ${sansMr.variable}`}>
+        <LocaleProvider locale={locale}>
+          <RaagProvider>
+            <Backdrop />
+            <Veil />
+            <Nav signedIn={!!user} firstName={firstName} profilePicUrl={profilePicUrl} showBell={showBell} unreadCount={unreadCount} showAdmin={showBell} />
+            <AuthErrorCatcher />
+            <main className="container-x py-8 md:py-12">{children}</main>
+            <Toaster
+              theme="dark"
+              position="bottom-center"
+              toastOptions={{
+                style: {
+                  background: "var(--bg-1)",
+                  color: "var(--ink-0)",
+                  border: "1px solid var(--line)",
+                },
+              }}
+            />
+          </RaagProvider>
+        </LocaleProvider>
       </body>
     </html>
   );

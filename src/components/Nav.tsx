@@ -7,6 +7,8 @@ import { Menu, X } from "lucide-react";
 import Lotus from "./Lotus";
 import RaagSwitcher from "./RaagSwitcher";
 import NotifBell from "./NotifBell";
+import LocaleSwitcher from "./LocaleSwitcher";
+import { useT } from "./LocaleProvider";
 
 type Props = {
   signedIn: boolean;
@@ -21,6 +23,7 @@ export default function Nav({ signedIn, firstName, profilePicUrl, showBell, unre
   const path = usePathname();
   const inApp = path?.startsWith("/app");
   const [menuOpen, setMenuOpen] = useState(false);
+  const t = useT();
 
   useEffect(() => {
     if (menuOpen) document.body.style.overflow = "hidden";
@@ -32,18 +35,18 @@ export default function Nav({ signedIn, firstName, profilePicUrl, showBell, unre
   useEffect(() => { setMenuOpen(false); }, [path]);
 
   const appLinks = [
-    { href: "/app", label: "Home" },
-    { href: "/app/event", label: "Concert" },
-    { href: "/app/poll", label: "Dates" },
-    { href: "/app/performances", label: "Compositions" },
-    { href: "/app/shishyas", label: "People" },
-    { href: "/app/invite", label: "Invite" },
-    ...(showAdmin ? [{ href: "/app/admin", label: "Admin" }] : []),
+    { href: "/app", label: t("nav.home") },
+    { href: "/app/event", label: t("nav.concert") },
+    { href: "/app/poll", label: t("nav.dates") },
+    { href: "/app/performances", label: t("nav.compositions") },
+    { href: "/app/shishyas", label: t("nav.people") },
+    { href: "/app/invite", label: t("nav.invite") },
+    ...(showAdmin ? [{ href: "/app/admin", label: t("nav.admin") }] : []),
   ];
 
   const publicLinks = [
-    { href: "/signup", label: "Join" },
-    { href: "/login", label: "Sign in" },
+    { href: "/signup", label: t("common.join") },
+    { href: "/login", label: t("common.signIn") },
   ];
 
   const desktopLinks = inApp ? appLinks : [];
@@ -72,7 +75,7 @@ export default function Nav({ signedIn, firstName, profilePicUrl, showBell, unre
                 className="block text-[9px] tracking-[0.32em] uppercase opacity-80"
                 style={{ color: "var(--ink-2)" }}
               >
-                Saurabh Dada&rsquo;s
+                {t("nav.logoTop")}
               </span>
               <span
                 className="block font-display tracking-tight"
@@ -84,7 +87,7 @@ export default function Nav({ signedIn, firstName, profilePicUrl, showBell, unre
                 className="block text-[9px] tracking-[0.32em] uppercase opacity-80"
                 style={{ color: "var(--ink-2)" }}
               >
-                2026
+                {t("nav.logoYear")}
               </span>
             </span>
           </Link>
@@ -115,6 +118,9 @@ export default function Nav({ signedIn, firstName, profilePicUrl, showBell, unre
           {/* Right cluster */}
           <div className="flex items-center gap-2 sm:gap-2.5">
             {showBell && <NotifBell count={unreadCount} />}
+            <div className="hidden md:block">
+              <LocaleSwitcher compact />
+            </div>
             <div className="hidden md:block">
               <RaagSwitcher />
             </div>
@@ -167,7 +173,7 @@ export default function Nav({ signedIn, firstName, profilePicUrl, showBell, unre
           >
             <div className="container-x flex items-center justify-between py-3"
                  style={{ borderBottom: "1px solid var(--line)" }}>
-              <span className="text-xs tracking-[0.32em] uppercase" style={{ color: "var(--ink-2)" }}>Menu</span>
+              <span className="text-xs tracking-[0.32em] uppercase" style={{ color: "var(--ink-2)" }}>{t("common.menu")}</span>
               <button onClick={() => setMenuOpen(false)} className="p-2" aria-label="Close" style={{ color: "var(--ink-1)" }}>
                 <X size={20} />
               </button>
@@ -202,15 +208,13 @@ export default function Nav({ signedIn, firstName, profilePicUrl, showBell, unre
                   </motion.li>
                 ))}
               </ul>
-              <div className="mt-10">
-                <div className="text-xs tracking-[0.3em] uppercase mb-3" style={{ color: "var(--ink-2)" }}>
-                  Raag
-                </div>
+              <div className="mt-10 flex gap-3 flex-wrap">
+                <LocaleSwitcher />
                 <RaagSwitcher />
               </div>
               {signedIn && (
                 <form action="/logout" method="post" className="mt-12">
-                  <button className="btn-link text-sm">Sign out</button>
+                  <button className="btn-link text-sm">{t("profile.signOut")}</button>
                 </form>
               )}
             </div>

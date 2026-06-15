@@ -129,6 +129,21 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+/* Marathi: swap the type pairing.
+   Body switches to Hind Vadodara (warm humanist Devanagari sans);
+   .font-display uses Tiro Devanagari Marathi (calligraphic serif). */
+html[data-locale="mr"] body {
+  font-family: var(--font-sans-mr), ui-sans-serif, system-ui, sans-serif;
+  line-height: 1.65;
+}
+html[data-locale="mr"] .font-display,
+html[data-locale="mr"] .font-display-soft {
+  font-family: var(--font-display-mr), ui-serif, Georgia, serif;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.25;
+}
+
 /* Display: Fraunces, with SOFT axis at max for softer terminals, opsz=72 for display feel.
    Used via class .font-display — handles both headings and emphasised paragraphs. */
 /* Display headings — Cormorant at light weight so it reads soft, not sharp.
