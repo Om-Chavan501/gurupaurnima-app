@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Sign in to the aangan</title>
+</head>
+<body style="margin:0; padding:0; background:#0e0a1a; color:#f3eef8; font-family:'Helvetica Neue', Arial, sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0e0a1a;">
+    <tr>
+      <td align="center" style="padding:48px 16px;">
+        <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="max-width:560px; width:100%;">
+          <tr>
+            <td style="padding-bottom:8px; font-size:11px; letter-spacing:0.35em; text-transform:uppercase; color:#9b8ab4;">
+              Gurupaurnima 2026
+            </td>
+          </tr>
+          <tr>
+            <td style="padding-bottom:24px;">
+              <div style="font-family:'Cormorant Garamond', Georgia, serif; font-size:42px; line-height:1.05; color:#f3eef8;">
+                Welcome back.
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td style="color:#d6c9e8; font-size:15px; line-height:1.6; padding-bottom:32px;">
+              Click below to sign in. The link is good for the next hour.
+            </td>
+          </tr>
+          <tr>
+            <td style="padding-bottom:48px;">
+              <a href="{{ .ConfirmationURL }}" style="display:inline-block; padding:14px 28px; border-radius:999px; background:#c9a13b; color:#0e0a1a; text-decoration:none; font-weight:500; letter-spacing:0.04em;">
+                Sign in →
+              </a>
+            </td>
+          </tr>
+          <tr>
+            <td style="border-top:1px solid rgba(243, 211, 107, 0.18); padding-top:16px; font-size:11px; color:#9b8ab4; line-height:1.6;">
+              Or paste this into your browser:<br />
+              <span style="color:#f3d36b; word-break:break-all;">{{ .ConfirmationURL }}</span>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

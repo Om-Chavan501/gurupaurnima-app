@@ -1,0 +1,43 @@
+// Minimal but reasonable list of country dial codes. Default is India.
+export type Country = { code: string; dial: string; name: string; flag: string };
+
+export const COUNTRIES: Country[] = [
+  { code: "IN", dial: "+91",  name: "India",          flag: "🇮🇳" },
+  { code: "US", dial: "+1",   name: "United States",  flag: "🇺🇸" },
+  { code: "GB", dial: "+44",  name: "United Kingdom", flag: "🇬🇧" },
+  { code: "AE", dial: "+971", name: "UAE",            flag: "🇦🇪" },
+  { code: "SG", dial: "+65",  name: "Singapore",      flag: "🇸🇬" },
+  { code: "CA", dial: "+1",   name: "Canada",         flag: "🇨🇦" },
+  { code: "AU", dial: "+61",  name: "Australia",      flag: "🇦🇺" },
+  { code: "DE", dial: "+49",  name: "Germany",        flag: "🇩🇪" },
+  { code: "FR", dial: "+33",  name: "France",         flag: "🇫🇷" },
+  { code: "NL", dial: "+31",  name: "Netherlands",    flag: "🇳🇱" },
+  { code: "JP", dial: "+81",  name: "Japan",          flag: "🇯🇵" },
+  { code: "NZ", dial: "+64",  name: "New Zealand",    flag: "🇳🇿" },
+  { code: "QA", dial: "+974", name: "Qatar",          flag: "🇶🇦" },
+  { code: "SA", dial: "+966", name: "Saudi Arabia",   flag: "🇸🇦" },
+  { code: "OM", dial: "+968", name: "Oman",           flag: "🇴🇲" },
+  { code: "KW", dial: "+965", name: "Kuwait",         flag: "🇰🇼" },
+  { code: "BH", dial: "+973", name: "Bahrain",        flag: "🇧🇭" },
+  { code: "LK", dial: "+94",  name: "Sri Lanka",      flag: "🇱🇰" },
+  { code: "NP", dial: "+977", name: "Nepal",          flag: "🇳🇵" },
+  { code: "BD", dial: "+880", name: "Bangladesh",     flag: "🇧🇩" },
+  { code: "PK", dial: "+92",  name: "Pakistan",       flag: "🇵🇰" },
+  { code: "CH", dial: "+41",  name: "Switzerland",    flag: "🇨🇭" },
+  { code: "IT", dial: "+39",  name: "Italy",          flag: "🇮🇹" },
+  { code: "ES", dial: "+34",  name: "Spain",          flag: "🇪🇸" },
+  { code: "SE", dial: "+46",  name: "Sweden",         flag: "🇸🇪" },
+  { code: "NO", dial: "+47",  name: "Norway",         flag: "🇳🇴" },
+  { code: "DK", dial: "+45",  name: "Denmark",        flag: "🇩🇰" },
+  { code: "IE", dial: "+353", name: "Ireland",        flag: "🇮🇪" },
+  { code: "ZA", dial: "+27",  name: "South Africa",   flag: "🇿🇦" },
+  { code: "BR", dial: "+55",  name: "Brazil",         flag: "🇧🇷" },
+  { code: "MY", dial: "+60",  name: "Malaysia",       flag: "🇲🇾" },
+  { code: "TH", dial: "+66",  name: "Thailand",       flag: "🇹🇭" },
+  { code: "ID", dial: "+62",  name: "Indonesia",      flag: "🇮🇩" },
+  { code: "CN", dial: "+86",  name: "China",          flag: "🇨🇳" },
+  { code: "HK", dial: "+852", name: "Hong Kong",      flag: "🇭🇰" },
+  { code: "KR", dial: "+82",  name: "South Korea",    flag: "🇰🇷" },
+];
+
+export const DEFAULT_COUNTRY = COUNTRIES[0];
