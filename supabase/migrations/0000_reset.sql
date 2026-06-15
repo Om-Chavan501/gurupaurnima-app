@@ -8,6 +8,8 @@
 -- ============================================================
 
 -- 1. Drop tables (cascade handles FK order)
+drop table if exists admin_requests    cascade;
+drop table if exists invite_codes      cascade;
 drop table if exists activity_log      cascade;
 drop table if exists digest_state      cascade;
 drop table if exists performances      cascade;
@@ -23,8 +25,10 @@ drop type if exists user_role    cascade;
 
 -- 3. Drop helper functions / triggers (already cascade-dropped with tables,
 --    but be explicit so re-runs are clean)
-drop function if exists set_updated_at()      cascade;
-drop function if exists is_admin_or_guru(uuid) cascade;
+drop function if exists set_updated_at()         cascade;
+drop function if exists is_admin_or_guru(uuid)   cascade;
+drop function if exists resolve_invite_code(text) cascade;
+drop function if exists mark_invite_redeemed(text) cascade;
 
 -- 4. Storage: remove all objects in the profile-pics bucket
 --    (the bucket itself stays; objects are wiped)
