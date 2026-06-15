@@ -33,9 +33,11 @@ export default function Nav({ signedIn, firstName, profilePicUrl, showBell, unre
 
   const appLinks = [
     { href: "/app", label: "Home" },
+    { href: "/app/event", label: "Concert" },
     { href: "/app/poll", label: "Dates" },
     { href: "/app/performances", label: "Compositions" },
-    { href: "/app/shishyas", label: "Shishyas" },
+    { href: "/app/shishyas", label: "People" },
+    { href: "/app/invite", label: "Invite" },
     ...(showAdmin ? [{ href: "/app/admin", label: "Admin" }] : []),
   ];
 

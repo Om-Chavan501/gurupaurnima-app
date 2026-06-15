@@ -1,6 +1,6 @@
 "use client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Eye, EyeOff } from "lucide-react";
@@ -14,10 +14,21 @@ type Role = "shishya" | "audience";
 
 export default function SignupPage() {
   const router = useRouter();
+  const search = useSearchParams();
   const [step, setStep] = useState<Step>("role");
   const [role, setRole] = useState<Role>("shishya");
   const [code, setCode] = useState("");
   const [invitedBy, setInvitedBy] = useState<string | null>(null);
+
+  // Deep link with ?code=XXXXXX → prefill audience invite path
+  useEffect(() => {
+    const c = search.get("code");
+    if (c) {
+      setRole("audience");
+      setCode(c.toUpperCase());
+      setStep("code");
+    }
+  }, [search]);
   const [first, setFirst] = useState("");
   const [last, setLast] = useState("");
   const [email, setEmail] = useState("");
