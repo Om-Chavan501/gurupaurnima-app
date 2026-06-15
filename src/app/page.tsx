@@ -32,7 +32,7 @@ export default async function Home() {
                 <Link href="/app" className="btn">Continue</Link>
               ) : (
                 <>
-                  <Link href="/signup" className="btn">Join as a shishya</Link>
+                  <Link href="/signup" className="btn">Join</Link>
                   <Link href="/login" className="btn btn-ghost">I&rsquo;ve been here before</Link>
                 </>
               )}
@@ -73,8 +73,8 @@ export default async function Home() {
               {[
                 {
                   n: "01",
-                  title: "Sign in",
-                  body: "Make an account with your email — you only do this once. Saurabh Dada or any senior shishya can later mark you verified.",
+                  title: "Sign up with a code",
+                  body: "Shishyas use today's 6-digit code (any admin shares it on request). Audience uses an invite code from a verified shishya or the guru. No code? Reach out to an admin from the signup screen.",
                 },
                 {
                   n: "02",
@@ -83,7 +83,7 @@ export default async function Home() {
                 },
                 {
                   n: "03",
-                  title: "If you&rsquo;re performing, share your piece",
+                  title: "If you're performing, share your piece",
                   body: "The composition, the scale, and what you'll need on stage. So we don't pick the same piece twice.",
                 },
               ].map((s) => (
@@ -91,13 +91,55 @@ export default async function Home() {
                   <span className="section-index">{s.n}</span>
                   <div>
                     <div className="font-display text-2xl md:text-3xl">
-                      <span dangerouslySetInnerHTML={{ __html: s.title }} />
+                      {s.title}
                     </div>
                     <p className="mt-1.5 text-[15px]" style={{ color: "var(--ink-1)" }}>{s.body}</p>
                   </div>
                 </li>
               ))}
             </ol>
+          </div>
+        </div>
+      </section>
+
+      <div className="rule mt-16 md:mt-24" />
+
+      {/* ===== Access — how the two doors work ===== */}
+      <section className="pt-12 md:pt-16">
+        <div className="grid md:grid-cols-12 gap-y-8 md:gap-x-10">
+          <div className="md:col-span-3">
+            <div className="text-[11px] tracking-[0.32em] uppercase" style={{ color: "var(--ink-2)" }}>
+              Who can join
+            </div>
+            <p className="mt-2 text-sm" style={{ color: "var(--ink-2)" }}>Two paths in.</p>
+          </div>
+          <div className="md:col-span-9 grid md:grid-cols-2 gap-5">
+            <div
+              className="p-5 rounded-2xl"
+              style={{ background: "color-mix(in oklab, var(--ink-0) 3%, transparent)", border: "1px solid var(--line)" }}
+            >
+              <div className="text-[10px] tracking-[0.3em] uppercase" style={{ color: "var(--ink-2)" }}>
+                Shishya
+              </div>
+              <div className="font-display text-2xl mt-1">A student of Saurabh Dada</div>
+              <p className="mt-2 text-[15px]" style={{ color: "var(--ink-1)" }}>
+                You&rsquo;ll need today&rsquo;s 6-digit shishya code. It changes each day at midnight (IST).
+                Ask any admin on WhatsApp and they&rsquo;ll share it.
+              </p>
+            </div>
+            <div
+              className="p-5 rounded-2xl"
+              style={{ background: "color-mix(in oklab, var(--ink-0) 3%, transparent)", border: "1px solid var(--line)" }}
+            >
+              <div className="text-[10px] tracking-[0.3em] uppercase" style={{ color: "var(--ink-2)" }}>
+                Audience · श्रोता
+              </div>
+              <div className="font-display text-2xl mt-1">Coming to listen</div>
+              <p className="mt-2 text-[15px]" style={{ color: "var(--ink-1)" }}>
+                You&rsquo;ll need a 6-character invite code from a verified shishya or the guru.
+                Codes last 24 hours. Once you&rsquo;re in, you&rsquo;ll see the concert details.
+              </p>
+            </div>
           </div>
         </div>
       </section>

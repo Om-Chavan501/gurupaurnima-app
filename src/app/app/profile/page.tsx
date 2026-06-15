@@ -1,7 +1,8 @@
 import PageTransition from "@/components/PageTransition";
 import { createClient } from "@/lib/supabase/server";
-import type { Profile } from "@/lib/types";
+import type { AdminRequest, AdminRequestType, Profile } from "@/lib/types";
 import ProfileEditForm from "./ProfileEditForm";
+import SelfServiceRequests from "./SelfServiceRequests";
 
 export default async function ProfilePage() {
   const supabase = await createClient();
@@ -10,6 +11,18 @@ export default async function ProfilePage() {
   const { data } = await supabase.from("profiles").select("*").eq("id", user.id).single();
   const profile = data as Profile;
 
+  const { data: requestsRaw } = await supabase
+    .from("admin_requests")
+    .select("*")
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false });
+  const requests = (requestsRaw ?? []) as AdminRequest[];
+
+  // Which request types are currently pending
+  const pendingTypes = new Set<AdminRequestType>(
+    requests.filter((r) => r.status === "pending").map((r) => r.request_type),
+  );
+
   return (
     <PageTransition>
       <div className="pt-2 md:pt-6 max-w-2xl">
@@ -17,7 +30,17 @@ export default async function ProfilePage() {
         <h1 className="font-display" style={{ fontSize: "clamp(34px, 5.5vw, 50px)", lineHeight: 1.05 }}>
           Edit your profile.
         </h1>
+
         <ProfileEditForm profile={profile} />
+
+        <div className="rule mt-12" />
+
+        <SelfServiceRequests
+          role={profile.role}
+          isVerified={profile.is_verified}
+          pendingTypes={Array.from(pendingTypes)}
+          recentRequests={requests.slice(0, 6)}
+        />
       </div>
     </PageTransition>
   );
