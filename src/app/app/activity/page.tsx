@@ -4,7 +4,7 @@ import PageTransition from "@/components/PageTransition";
 import { createClient } from "@/lib/supabase/server";
 import { labelForAction } from "@/lib/activityLabels";
 import MarkRead from "./MarkRead";
-import { getT } from "@/lib/i18n-server";
+import { getLocale, getT } from "@/lib/i18n-server";
 
 type Row = {
   id: number;
@@ -19,6 +19,7 @@ type ProfileLite = { id: string; first_name: string; last_name: string; profile_
 
 export default async function ActivityPage() {
   const t = await getT();
+  const locale = await getLocale();
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
@@ -87,7 +88,7 @@ export default async function ActivityPage() {
                         {actor.first_name} {actor.last_name}
                       </Link>
                     ) : <span style={{ color: "var(--ink-2)" }}>Someone</span>}{" "}
-                    <span style={{ color: "var(--ink-1)" }}>{labelForAction(r.action)}</span>
+                    <span style={{ color: "var(--ink-1)" }}>{t(`activity.action.${r.action}`) !== `activity.action.${r.action}` ? t(`activity.action.${r.action}`) : labelForAction(r.action)}</span>
                     {targetIsProfile && targetIsProfile.id !== r.actor_id && (
                       <>
                         {" — "}
@@ -98,7 +99,7 @@ export default async function ActivityPage() {
                     )}
                   </div>
                   <div className="text-xs mt-1" style={{ color: "var(--ink-2)" }}>
-                    {new Date(r.created_at).toLocaleString("en-IN", { timeZone: "Asia/Kolkata", day: "numeric", month: "short", hour: "numeric", minute: "2-digit", hour12: true })}
+                    {new Date(r.created_at).toLocaleString(locale === "mr" ? "mr-IN" : "en-IN", { timeZone: "Asia/Kolkata", day: "numeric", month: "short", hour: "numeric", minute: "2-digit", hour12: true })}
                   </div>
                 </div>
               </li>
