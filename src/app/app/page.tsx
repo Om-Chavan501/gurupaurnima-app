@@ -2,8 +2,10 @@ import Link from "next/link";
 import PageTransition from "@/components/PageTransition";
 import { createClient } from "@/lib/supabase/server";
 import { EVENT_DATES } from "@/lib/types";
+import { getT } from "@/lib/i18n-server";
 
 export default async function AppHome() {
+  const t = await getT();
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
@@ -47,17 +49,17 @@ export default async function AppHome() {
   // Compute primary "next step"
   let nextStep: { href: string; label: string; sub: string } | null = null;
   if (!pollSubmitted) {
-    nextStep = { href: "/app/poll", label: "Tell us which night suits you", sub: "Step 1 of 2" };
+    nextStep = { href: "/app/poll", label: t("app.home.step1"), sub: t("app.home.stepOf2_1") };
   } else if (!audience && !perfDone) {
-    nextStep = { href: "/app/performances/mine", label: "Share your performance details", sub: "Step 2 of 2" };
+    nextStep = { href: "/app/performances/mine", label: t("app.home.step2"), sub: t("app.home.stepOf2_2") };
   }
 
   const pollDetail = pollSubmitted
-    ? `${picked.length} night${picked.length !== 1 ? "s" : ""} marked`
-    : "Pick one or many";
+    ? t(picked.length === 1 ? "app.home.nightMarked" : "app.home.nightsMarked", { n: picked.length })
+    : t("app.home.pickOneOrMany");
   const perfDetail = !perfDone
-    ? "Not decided yet"
-    : (perf!.will_perform ? (perf!.composition_name ?? "Details pending") : "Not performing");
+    ? t("app.home.notDecided")
+    : (perf!.will_perform ? (perf!.composition_name ?? t("app.home.detailsPending")) : t("app.home.notPerforming"));
 
   return (
     <PageTransition>
@@ -66,7 +68,7 @@ export default async function AppHome() {
         <div className="flex items-baseline justify-between gap-4 flex-wrap">
           <div>
             <p className="text-[11px] tracking-[0.32em] uppercase" style={{ color: "var(--ink-2)" }}>
-              Namaskar
+              {t("app.home.namaskar")}
             </p>
             <h1
               className="font-display mt-1.5"
@@ -86,7 +88,7 @@ export default async function AppHome() {
               }}
             >
               <span className="text-[10px] tracking-[0.25em] uppercase" style={{ color: "var(--accent-soft)" }}>
-                Next
+                {t("app.home.next")}
               </span>
               <span>{nextStep.label}</span>
               <span className="transition-transform group-hover:translate-x-0.5" style={{ color: "var(--accent-soft)" }}>→</span>
@@ -97,27 +99,27 @@ export default async function AppHome() {
         {/* Two status cards */}
         <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
           <StatusCard
-            label="Your date pick"
+            label={t("app.home.yourDatePick")}
             value={pollDetail}
             done={pollSubmitted}
             href="/app/poll"
-            cta={pollSubmitted ? "Edit" : "Open"}
+            cta={pollSubmitted ? t("common.edit") : t("common.open")}
           />
           {audience ? (
             <StatusCard
-              label="Performance"
-              value="Audience attendees don't perform"
+              label={t("app.home.performance")}
+              value={t("app.home.audienceDontPerform")}
               done
               href="/app/performances"
-              cta="See list"
+              cta={t("app.home.seeList")}
             />
           ) : (
             <StatusCard
-              label="Your performance"
+              label={t("app.home.yourPerformance")}
               value={perfDetail}
               done={perfDone}
               href="/app/performances/mine"
-              cta={perfDone ? "Edit" : "Open"}
+              cta={perfDone ? t("common.edit") : t("common.open")}
             />
           )}
         </div>
@@ -133,7 +135,7 @@ export default async function AppHome() {
               color: "var(--ink-0)",
             }}
           >
-            <span><span className="text-[10px] tracking-[0.25em] uppercase mr-2" style={{ color: "var(--accent-soft)" }}>Next</span>{nextStep.label}</span>
+            <span><span className="text-[10px] tracking-[0.25em] uppercase mr-2" style={{ color: "var(--accent-soft)" }}>{t("app.home.next")}</span>{nextStep.label}</span>
             <span style={{ color: "var(--accent-soft)" }}>→</span>
           </Link>
         )}
@@ -142,9 +144,9 @@ export default async function AppHome() {
       {/* ===== Group counts row ===== */}
       <section className="mt-6">
         <div className="grid grid-cols-3 gap-3">
-          <CountTile n={shishyaCount ?? 0} label="Shishyas" href="/app/shishyas" />
-          <CountTile n={pollCount ?? 0} label="Date votes" href="/app/poll" />
-          <CountTile n={perfCount ?? 0} label="Performing" href="/app/performances" />
+          <CountTile n={shishyaCount ?? 0} label={t("app.home.countShishyas")} href="/app/shishyas" />
+          <CountTile n={pollCount ?? 0} label={t("app.home.countDateVotes")} href="/app/poll" />
+          <CountTile n={perfCount ?? 0} label={t("app.home.countPerforming")} href="/app/performances" />
         </div>
       </section>
 
@@ -159,9 +161,9 @@ export default async function AppHome() {
         >
           <div className="flex items-center justify-between mb-4">
             <span className="text-[10px] tracking-[0.3em] uppercase" style={{ color: "var(--ink-2)" }}>
-              Date poll
+              {t("app.home.datePoll")}
             </span>
-            <span className="text-[10px]" style={{ color: "var(--accent-soft)" }}>view all →</span>
+            <span className="text-[10px]" style={{ color: "var(--accent-soft)" }}>{t("app.home.viewAll")} →</span>
           </div>
           <div className="space-y-3">
             {EVENT_DATES.map((d) => {
@@ -170,7 +172,7 @@ export default async function AppHome() {
               return (
                 <div key={d.value}>
                   <div className="flex items-center justify-between mb-1 text-xs" style={{ color: "var(--ink-1)" }}>
-                    <span>{d.label}</span>
+                    <span>{t(`date.${d.value}`)}</span>
                     <span style={{ color: "var(--ink-2)" }}>{v}</span>
                   </div>
                   <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "var(--bg-2)" }}>
@@ -193,9 +195,9 @@ export default async function AppHome() {
         >
           <div className="flex items-center justify-between mb-4">
             <span className="text-[10px] tracking-[0.3em] uppercase" style={{ color: "var(--ink-2)" }}>
-              Compositions · {finalised?.length ?? 0}
+              {t("app.home.compositions")} · {finalised?.length ?? 0}
             </span>
-            <span className="text-[10px]" style={{ color: "var(--accent-soft)" }}>view all →</span>
+            <span className="text-[10px]" style={{ color: "var(--accent-soft)" }}>{t("app.home.viewAll")} →</span>
           </div>
           {finalised && finalised.length > 0 ? (
             <ul className="space-y-2.5">
@@ -212,13 +214,13 @@ export default async function AppHome() {
               ))}
               {finalised.length > 5 && (
                 <li className="text-xs" style={{ color: "var(--ink-2)" }}>
-                  +{finalised.length - 5} more
+                  {t("app.home.moreSuffix", { n: finalised.length - 5 })}
                 </li>
               )}
             </ul>
           ) : (
             <p className="text-sm" style={{ color: "var(--ink-2)" }}>
-              No compositions finalised yet.
+              {t("app.home.noCompositions")}
             </p>
           )}
         </Link>
@@ -247,7 +249,7 @@ function StatusCard({ label, value, done, href, cta }: {
           className="text-[10px] tracking-[0.25em] uppercase"
           style={{ color: done ? "var(--accent-soft)" : "var(--ink-2)" }}
         >
-          {done ? "✓ done" : "pending"}
+          {done ? "✓" : ""} {done ? "done" : "pending"}
         </span>
       </div>
       <div className="mt-2 font-display-soft text-lg md:text-xl truncate" style={{ color: "var(--ink-0)" }}>

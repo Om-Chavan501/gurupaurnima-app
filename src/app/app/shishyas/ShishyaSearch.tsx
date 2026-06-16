@@ -3,8 +3,10 @@ import { useState, useMemo } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import type { Profile } from "@/lib/types";
+import { useT } from "@/components/LocaleProvider";
 
 export default function ShishyaSearch({ list }: { list: Profile[] }) {
+  const t = useT();
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState<"all" | "shishya" | "audience" | "guru">("all");
 
@@ -26,7 +28,7 @@ export default function ShishyaSearch({ list }: { list: Profile[] }) {
           className="field"
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="Search by name, email, number…"
+          placeholder={t("common.searchPlaceholder")}
         />
       </div>
 
@@ -42,7 +44,7 @@ export default function ShishyaSearch({ list }: { list: Profile[] }) {
               color: filter === f ? "var(--ink-0)" : "var(--ink-2)",
             }}
           >
-            {f === "all" ? "Everyone" : f}
+            {f === "all" ? t("shishyas.filterAll") : (f === "shishya" ? t("role.shishya") : f === "audience" ? t("role.audience") : t("role.guru"))}
           </button>
         ))}
       </div>
@@ -73,14 +75,14 @@ export default function ShishyaSearch({ list }: { list: Profile[] }) {
                 className="text-sm opacity-0 group-hover:opacity-100 transition-opacity hidden sm:inline"
                 style={{ color: "var(--accent-soft)" }}
               >
-                view →
+                {t("common.view")} →
               </span>
             </Link>
           </motion.li>
         ))}
         {filtered.length === 0 && (
           <li className="py-8 text-center text-sm" style={{ color: "var(--ink-2)" }}>
-            No one matches.
+            {t("shishyas.noMatch")}
           </li>
         )}
       </ul>

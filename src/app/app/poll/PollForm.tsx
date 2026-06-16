@@ -5,8 +5,10 @@ import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { EVENT_DATES, type EventDate } from "@/lib/types";
 import { savePoll, savePollFor } from "@/lib/actions";
+import { useT } from "@/components/LocaleProvider";
 
 export default function PollForm({ initial, targetUserId }: { initial: EventDate[]; targetUserId?: string }) {
+  const t = useT();
   const router = useRouter();
   // "none" = explicitly can't attend any. Stored as empty picks array.
   const [picked, setPicked] = useState<Set<EventDate>>(new Set(initial));
@@ -29,13 +31,13 @@ export default function PollForm({ initial, targetUserId }: { initial: EventDate
 
   function save() {
     if (picked.size === 0 && !none) {
-      toast.error("Pick at least one date, or mark \"Can't attend\".");
+      toast.error(t("poll.pickOneOrNone"));
       return;
     }
     const arr = none ? [] : Array.from(picked);
     start(async () => {
       const r = targetUserId ? await savePollFor(targetUserId, arr) : await savePoll(arr);
-      if (r.ok) { toast.success("Saved."); router.refresh(); }
+      if (r.ok) { toast.success(t("poll.saved")); router.refresh(); }
       else toast.error(r.error);
     });
   }
@@ -58,16 +60,16 @@ export default function PollForm({ initial, targetUserId }: { initial: EventDate
               }}
             >
               <div className="text-xs tracking-[0.3em] uppercase" style={{ color: "var(--ink-2)" }}>
-                {on ? "Yes" : "Maybe?"}
+                {on ? "✓" : "·"}
               </div>
-              <div className="font-display text-2xl mt-1">{d.label}</div>
+              <div className="font-display text-2xl mt-1">{t(`date.${d.value}`)}</div>
             </motion.button>
           );
         })}
       </div>
 
       <div className="mt-6 flex items-center gap-3">
-        <span className="text-xs tracking-[0.3em] uppercase" style={{ color: "var(--ink-2)" }}>or</span>
+        <span className="text-xs tracking-[0.3em] uppercase" style={{ color: "var(--ink-2)" }}>{t("common.or")}</span>
         <motion.button
           type="button"
           onClick={chooseNone}
@@ -79,13 +81,13 @@ export default function PollForm({ initial, targetUserId }: { initial: EventDate
             color: none ? "var(--ink-0)" : "var(--ink-1)",
           }}
         >
-          I can&rsquo;t attend any of these
+          {t("poll.cantAttend")}
         </motion.button>
       </div>
 
       <div className="mt-8 flex justify-end">
         <button onClick={save} disabled={pending} className="btn">
-          {pending ? "…" : "Save my choice"}
+          {pending ? "…" : t("poll.saveMyChoice")}
         </button>
       </div>
     </div>

@@ -2,8 +2,10 @@ import PageTransition from "@/components/PageTransition";
 import { createClient } from "@/lib/supabase/server";
 import type { Profile } from "@/lib/types";
 import ShishyaSearch from "./ShishyaSearch";
+import { getT } from "@/lib/i18n-server";
 
 export default async function ShishyasPage() {
+  const t = await getT();
   const supabase = await createClient();
   const { data } = await supabase
     .from("profiles")
@@ -17,16 +19,16 @@ export default async function ShishyasPage() {
     <PageTransition>
       <section className="pt-2 md:pt-6">
         <div className="text-[11px] tracking-[0.32em] uppercase mb-3" style={{ color: "var(--ink-2)" }}>
-          The gathering · {list.length}
+          {t("shishyas.kicker", { n: list.length })}
         </div>
         <h1
           className="font-display"
           style={{ fontSize: "clamp(34px, 5.5vw, 54px)", lineHeight: 1.05 }}
         >
-          Everyone who&rsquo;s signed in.
+          {t("shishyas.h1")}
         </h1>
         <p className="mt-3 max-w-xl text-[15px]" style={{ color: "var(--ink-1)" }}>
-          Tap anyone to see details, WhatsApp them, or place a call.
+          {t("shishyas.intro")}
         </p>
 
         <ShishyaSearch list={list} />

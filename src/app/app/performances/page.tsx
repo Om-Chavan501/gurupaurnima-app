@@ -2,6 +2,7 @@ import Link from "next/link";
 import PageTransition from "@/components/PageTransition";
 import { createClient } from "@/lib/supabase/server";
 import { INSTRUMENTS, SCALES, type Instrument, type Profile, type Scale } from "@/lib/types";
+import { getT } from "@/lib/i18n-server";
 
 type Row = {
   id: string;
@@ -14,6 +15,7 @@ type Row = {
 };
 
 export default async function PerformancesPage() {
+  const t = await getT();
   const supabase = await createClient();
 
   const [{ data: perfRaw }, { data: shishyas }, { data: gp }] = await Promise.all([
@@ -36,20 +38,20 @@ export default async function PerformancesPage() {
     <PageTransition>
       <section className="pt-2 md:pt-6">
         <div className="text-[11px] tracking-[0.32em] uppercase mb-3" style={{ color: "var(--ink-2)" }}>
-          The compositions
+          {t("perf.kicker")}
         </div>
         <h1
           className="font-display"
           style={{ fontSize: "clamp(34px, 5.5vw, 54px)", lineHeight: 1.05 }}
         >
-          What&rsquo;s being prepared.
+          {t("perf.h1")}
         </h1>
         <p className="mt-3 max-w-xl text-[15px]" style={{ color: "var(--ink-1)" }}>
-          So we don&rsquo;t pick the same piece twice. Tap any entry to see the artist&rsquo;s details.
+          {t("perf.intro")}
         </p>
 
         <div className="mt-7 flex flex-wrap gap-3">
-          <Link href="/app/performances/mine" className="btn">Your performance</Link>
+          <Link href="/app/performances/mine" className="btn">{t("perf.yourPerformance")}</Link>
         </div>
       </section>
 
@@ -58,7 +60,7 @@ export default async function PerformancesPage() {
       {/* ===== Performing ===== */}
       <section className="pt-10">
         <div className="flex items-baseline justify-between gap-4">
-          <h2 className="font-display text-2xl md:text-3xl">Performing</h2>
+          <h2 className="font-display text-2xl md:text-3xl">{t("perf.performing")}</h2>
           <span className="text-[11px] tracking-[0.3em] uppercase" style={{ color: "var(--ink-2)" }}>
             {performing.length}
           </span>
@@ -91,7 +93,7 @@ export default async function PerformancesPage() {
             </li>
           ))}
           {performing.length === 0 && (
-            <li className="py-6 text-sm" style={{ color: "var(--ink-2)" }}>No one has pledged a piece yet.</li>
+            <li className="py-6 text-sm" style={{ color: "var(--ink-2)" }}>{t("perf.noneYet")}</li>
           )}
         </ul>
       </section>
@@ -99,7 +101,7 @@ export default async function PerformancesPage() {
       {/* ===== Not performing ===== */}
       <section className="pt-12">
         <div className="flex items-baseline justify-between gap-4">
-          <h2 className="font-display text-2xl md:text-3xl">Not performing</h2>
+          <h2 className="font-display text-2xl md:text-3xl">{t("perf.notPerforming")}</h2>
           <span className="text-[11px] tracking-[0.3em] uppercase" style={{ color: "var(--ink-2)" }}>
             {notPerforming.length}
           </span>
@@ -115,7 +117,7 @@ export default async function PerformancesPage() {
       {/* ===== Yet to decide ===== */}
       <section className="pt-12">
         <div className="flex items-baseline justify-between gap-4">
-          <h2 className="font-display text-2xl md:text-3xl">Yet to decide</h2>
+          <h2 className="font-display text-2xl md:text-3xl">{t("perf.yetToDecide")}</h2>
           <span className="text-[11px] tracking-[0.3em] uppercase" style={{ color: "var(--ink-2)" }}>
             {pending.length}
           </span>
@@ -129,7 +131,7 @@ export default async function PerformancesPage() {
               </Link>
             </li>
           ))}
-          {pending.length === 0 && <li style={{ color: "var(--ink-2)" }}>Everyone has chimed in.</li>}
+          {pending.length === 0 && <li style={{ color: "var(--ink-2)" }}>{t("perf.everyoneChimed")}</li>}
         </ul>
       </section>
 
@@ -138,7 +140,7 @@ export default async function PerformancesPage() {
       {/* ===== Reach the guru ===== */}
       <section className="pt-10 pb-6">
         <div className="text-[11px] tracking-[0.32em] uppercase mb-4" style={{ color: "var(--ink-2)" }}>
-          Need to finalise with Saurabh Dada?
+          {t("perf.finaliseWithGuru")}
         </div>
         <div className="flex flex-wrap gap-3">
           <a
@@ -146,13 +148,13 @@ export default async function PerformancesPage() {
             target="_blank"
             href={`https://wa.me/${(process.env.NEXT_PUBLIC_GURU_WHATSAPP ?? "").replace(/\D/g, "")}`}
           >
-            WhatsApp Saurabh Dada
+            {t("perf.waGuru")}
           </a>
           <a
             className="btn btn-ghost"
             href={`tel:${process.env.NEXT_PUBLIC_GURU_PHONE ?? ""}`}
           >
-            Call · {process.env.NEXT_PUBLIC_GURU_PHONE ?? "—"}
+            {t("perf.callGuru")} · {process.env.NEXT_PUBLIC_GURU_PHONE ?? "—"}
           </a>
         </div>
       </section>

@@ -2,8 +2,10 @@ import PageTransition from "@/components/PageTransition";
 import { createClient } from "@/lib/supabase/server";
 import { EVENT_DATES, type EventDate } from "@/lib/types";
 import PollForm from "./PollForm";
+import { getT } from "@/lib/i18n-server";
 
 export default async function PollPage() {
+  const t = await getT();
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
@@ -31,17 +33,16 @@ export default async function PollPage() {
     <PageTransition>
       <section className="pt-2 md:pt-6">
         <div className="text-[11px] tracking-[0.32em] uppercase mb-3" style={{ color: "var(--ink-2)" }}>
-          The date poll
+          {t("poll.kicker")}
         </div>
         <h1
           className="font-display"
           style={{ fontSize: "clamp(34px, 5.5vw, 54px)", lineHeight: 1.05 }}
         >
-          Which night suits you?
+          {t("poll.h1")}
         </h1>
         <p className="mt-3 max-w-xl text-[15px]" style={{ color: "var(--ink-1)" }}>
-          Tick every date that works. If none of these suit, mark that instead.
-          You can come back and change this any time.
+          {t("poll.intro")}
         </p>
 
         <PollForm initial={myPicked} />
@@ -51,13 +52,13 @@ export default async function PollPage() {
 
       <section className="pt-10 pb-6">
         <div className="text-[11px] tracking-[0.32em] uppercase mb-6" style={{ color: "var(--ink-2)" }}>
-          Where everyone stands
+          {t("poll.whereStands")}
         </div>
         <div className="grid md:grid-cols-3 gap-y-10 md:gap-x-10">
           {EVENT_DATES.map((d) => (
             <div key={d.value}>
               <div className="text-[11px] tracking-[0.3em] uppercase" style={{ color: "var(--ink-2)" }}>
-                {d.label}
+                {t(`date.${d.value}`)}
               </div>
               <div
                 className="font-display mt-1"
@@ -66,7 +67,7 @@ export default async function PollPage() {
                 {tally[d.value].length}
               </div>
               <p className="mt-1 text-[11px] tracking-[0.18em] uppercase" style={{ color: "var(--ink-2)" }}>
-                people available
+                {t("poll.available")}
               </p>
               <ul className="mt-4 space-y-1 text-sm" style={{ color: "var(--ink-1)" }}>
                 {tally[d.value].slice(0, 30).map((p) => (

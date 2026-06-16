@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { raiseAdminRequest } from "@/lib/actions";
 import type { AdminRequest, AdminRequestType, Role } from "@/lib/types";
+import { useT } from "@/components/LocaleProvider";
 
 type Props = {
   role: Role;
@@ -12,29 +13,29 @@ type Props = {
   recentRequests: AdminRequest[];
 };
 
-const TYPE_LABEL: Record<AdminRequestType, string> = {
-  verify: "Be marked verified",
-  change_to_shishya: "Move me to shishya",
-  change_to_audience: "Move me to audience",
-};
-
 export default function SelfServiceRequests({ role, isVerified, pendingTypes, recentRequests }: Props) {
+  const t = useT();
+  const TYPE_LABEL: Record<AdminRequestType, string> = {
+    verify: t("profile.reqVerify"),
+    change_to_shishya: t("profile.reqToShishya"),
+    change_to_audience: t("profile.reqToAudience"),
+  };
   const router = useRouter();
   const [pending, start] = useTransition();
   const [active, setActive] = useState<AdminRequestType | null>(null);
   const [reason, setReason] = useState("");
 
-  const has = (t: AdminRequestType) => pendingTypes.includes(t);
+  const has = (kind: AdminRequestType) => pendingTypes.includes(kind);
 
   const adminName = process.env.NEXT_PUBLIC_ADMIN_NAME || "an admin";
   const adminWa = (process.env.NEXT_PUBLIC_ADMIN_WHATSAPP || "").replace(/\D/g, "");
   const adminPhone = process.env.NEXT_PUBLIC_ADMIN_PHONE || "";
 
-  function submit(t: AdminRequestType) {
+  function submit(kind: AdminRequestType) {
     start(async () => {
-      const r = await raiseAdminRequest(t, reason);
+      const r = await raiseAdminRequest(kind, reason);
       if (r.ok) {
-        toast.success("Request sent — admins will see it");
+        toast.success(t("profile.requestSent"));
         setActive(null);
         setReason("");
         router.refresh();
@@ -53,24 +54,23 @@ export default function SelfServiceRequests({ role, isVerified, pendingTypes, re
   return (
     <section className="pt-10">
       <div className="text-[11px] tracking-[0.32em] uppercase mb-3" style={{ color: "var(--ink-2)" }}>
-        Need something changed?
+        {t("profile.askKicker")}
       </div>
-      <h2 className="font-display text-2xl md:text-3xl">Ask the admins.</h2>
+      <h2 className="font-display text-2xl md:text-3xl">{t("profile.askH1")}</h2>
       <p className="mt-2 text-[15px]" style={{ color: "var(--ink-1)" }}>
-        Send a request and an admin will accept, reject, or hold it.
-        {!isVerified && " You currently aren't verified — until you are, you can't generate invite codes or be made admin."}
+        {t("profile.askIntro")}{!isVerified && ` ${t("profile.askNotVerifiedAddendum")}`}
       </p>
 
       <div className="mt-6 flex flex-wrap gap-2">
-        {offers.map((t) => (
+        {offers.map((opt) => (
           <button
-            key={t}
-            onClick={() => setActive(active === t ? null : t)}
-            disabled={has(t)}
+            key={opt}
+            onClick={() => setActive(active === opt ? null : opt)}
+            disabled={has(opt)}
             className="btn btn-ghost text-sm py-2 px-4"
-            title={has(t) ? "Already pending" : ""}
+            title={has(opt) ? t("profile.alreadyPending") : ""}
           >
-            {TYPE_LABEL[t]}{has(t) ? " · pending" : ""}
+            {TYPE_LABEL[opt]}{has(opt) ? ` · ${t("common.pending").toLowerCase()}` : ""}
           </button>
         ))}
       </div>
@@ -81,20 +81,20 @@ export default function SelfServiceRequests({ role, isVerified, pendingTypes, re
           style={{ background: "color-mix(in oklab, var(--ink-0) 3%, transparent)", border: "1px solid var(--line)" }}
         >
           <div className="field-group">
-            <label>Reason (optional)</label>
+            <label>{t("profile.reasonLabel")}</label>
             <input
               className="field"
               value={reason}
               onChange={(e) => setReason(e.target.value)}
-              placeholder="A short line for the admin"
+              placeholder={t("profile.reasonPlaceholder")}
               autoFocus
             />
           </div>
           <div className="mt-4 flex flex-wrap gap-2">
             <button onClick={() => submit(active)} disabled={pending} className="btn">
-              {pending ? "Sending…" : "Send request"}
+              {pending ? t("profile.sending") : t("profile.sendRequest")}
             </button>
-            <button onClick={() => setActive(null)} className="btn btn-ghost">Cancel</button>
+            <button onClick={() => setActive(null)} className="btn btn-ghost">{t("common.cancel")}</button>
           </div>
         </div>
       )}
@@ -105,7 +105,7 @@ export default function SelfServiceRequests({ role, isVerified, pendingTypes, re
         style={{ background: "color-mix(in oklab, var(--ink-0) 3%, transparent)", border: "1px solid var(--line)" }}
       >
         <div className="text-[10px] tracking-[0.3em] uppercase mb-1.5" style={{ color: "var(--ink-2)" }}>
-          Or talk to {adminName} directly
+          {t("profile.orTalk", { name: adminName })}
         </div>
         <div className="flex flex-wrap gap-2">
           {adminWa && (
@@ -114,12 +114,12 @@ export default function SelfServiceRequests({ role, isVerified, pendingTypes, re
               target="_blank"
               className="btn text-sm py-2 px-4"
             >
-              WhatsApp {adminName}
+              {`WhatsApp ${adminName}`}
             </a>
           )}
           {adminPhone && (
             <a href={`tel:${adminPhone}`} className="btn btn-ghost text-sm py-2 px-4">
-              Call · {adminPhone}
+              {t("perf.callGuru")} · {adminPhone}
             </a>
           )}
         </div>
@@ -129,7 +129,7 @@ export default function SelfServiceRequests({ role, isVerified, pendingTypes, re
       {recentRequests.length > 0 && (
         <div className="mt-10">
           <div className="text-[11px] tracking-[0.32em] uppercase mb-2" style={{ color: "var(--ink-2)" }}>
-            Recent requests
+            {t("profile.recentRequests")}
           </div>
           <ul className="divide-y" style={{ borderColor: "var(--line)" }}>
             {recentRequests.map((r) => (

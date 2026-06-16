@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { INSTRUMENTS, SCALES, type Instrument, type Scale } from "@/lib/types";
 import { savePerformance, savePerformanceFor, deletePerformance } from "@/lib/actions";
+import { useT } from "@/components/LocaleProvider";
 
 type Props = {
   targetUserId?: string; // when admin edits on behalf
@@ -18,6 +19,7 @@ type Props = {
 };
 
 export default function PerformanceForm({ initial, targetUserId }: Props) {
+  const t = useT();
   const router = useRouter();
   const [willPerform, setWillPerform] = useState<boolean | null>(initial?.will_perform ?? null);
   const [name, setName] = useState(initial?.composition_name ?? "");
@@ -31,7 +33,7 @@ export default function PerformanceForm({ initial, targetUserId }: Props) {
   }
 
   function save() {
-    if (willPerform === null) { toast.error("Choose first: performing or not"); return; }
+    if (willPerform === null) { toast.error(t("perf.chooseFirst")); return; }
     const payload = {
       will_perform: willPerform,
       composition_name: willPerform ? (name || null) : null,
@@ -41,7 +43,7 @@ export default function PerformanceForm({ initial, targetUserId }: Props) {
     };
     start(async () => {
       const r = targetUserId ? await savePerformanceFor(targetUserId, payload) : await savePerformance(payload);
-      if (r.ok) { toast.success("Saved."); router.refresh(); }
+      if (r.ok) { toast.success(t("perf.saved")); router.refresh(); }
       else toast.error(r.error);
     });
   }
@@ -49,7 +51,7 @@ export default function PerformanceForm({ initial, targetUserId }: Props) {
   function remove() {
     start(async () => {
       const r = await deletePerformance(targetUserId);
-      if (r.ok) { toast.success("Removed."); router.refresh(); }
+      if (r.ok) { toast.success(t("perf.removed")); router.refresh(); }
       else toast.error(r.error);
     });
   }
@@ -57,11 +59,11 @@ export default function PerformanceForm({ initial, targetUserId }: Props) {
   return (
     <div className="mt-10 space-y-10">
       <div>
-        <div className="text-xs tracking-[0.3em] uppercase mb-3" style={{ color: "var(--ink-2)" }}>Will you perform?</div>
+        <div className="text-xs tracking-[0.3em] uppercase mb-3" style={{ color: "var(--ink-2)" }}>{t("perf.willPerformQ")}</div>
         <div className="flex gap-3">
           {[
-            { v: true,  label: "Yes, I'll perform something" },
-            { v: false, label: "Not this time" },
+            { v: true,  label: t("perf.willYes") },
+            { v: false, label: t("perf.willNo") },
           ].map((opt) => (
             <button
               key={String(opt.v)}
@@ -89,17 +91,17 @@ export default function PerformanceForm({ initial, targetUserId }: Props) {
             className="space-y-10"
           >
             <div className="field-group">
-              <label>Composition / song</label>
-              <input className="field" value={name} onChange={(e) => setName(e.target.value)} placeholder="Raag, bandish, abhang…" />
+              <label>{t("perf.composition")}</label>
+              <input className="field" value={name} onChange={(e) => setName(e.target.value)} placeholder={t("perf.compositionPlaceholder")} />
             </div>
 
             <div className="field-group">
-              <label>Notes (optional)</label>
-              <textarea className="field" rows={3} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="A line about the piece, taal, tempo…" />
+              <label>{t("perf.notes")}</label>
+              <textarea className="field" rows={3} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder={t("perf.notesPlaceholder")} />
             </div>
 
             <div>
-              <div className="text-xs tracking-[0.3em] uppercase mb-3" style={{ color: "var(--ink-2)" }}>Scale</div>
+              <div className="text-xs tracking-[0.3em] uppercase mb-3" style={{ color: "var(--ink-2)" }}>{t("perf.scale")}</div>
               <div className="flex flex-wrap gap-2">
                 {SCALES.map((s) => (
                   <button
@@ -119,7 +121,7 @@ export default function PerformanceForm({ initial, targetUserId }: Props) {
             </div>
 
             <div>
-              <div className="text-xs tracking-[0.3em] uppercase mb-3" style={{ color: "var(--ink-2)" }}>Instruments needed on stage</div>
+              <div className="text-xs tracking-[0.3em] uppercase mb-3" style={{ color: "var(--ink-2)" }}>{t("perf.instruments")}</div>
               <div className="flex flex-wrap gap-2">
                 {INSTRUMENTS.map((i) => (
                   <button
@@ -144,11 +146,11 @@ export default function PerformanceForm({ initial, targetUserId }: Props) {
       <div className="flex items-center justify-between pt-4">
         {initial ? (
           <button onClick={remove} disabled={pending} className="btn-link text-sm" style={{ color: "#ff8585" }}>
-            Remove entry
+            {t("perf.remove")}
           </button>
         ) : <span />}
         <button onClick={save} disabled={pending} className="btn">
-          {pending ? "…" : "Save"}
+          {pending ? "…" : t("common.save")}
         </button>
       </div>
     </div>
