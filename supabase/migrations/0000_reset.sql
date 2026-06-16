@@ -31,8 +31,8 @@ drop function if exists resolve_invite_code(text) cascade;
 drop function if exists mark_invite_redeemed(text) cascade;
 
 -- 4. Storage: remove all objects in the profile-pics bucket
---    (the bucket itself stays; objects are wiped)
-delete from storage.objects where bucket_id = 'profile-pics';
+--    Direct DELETE is blocked by Supabase (storage.protect_delete trigger).
+--    Do it manually: Storage → profile-pics → select all → Delete.
 
 -- ============================================================
 -- Done. Now run 0001_init.sql to rebuild the schema,
