@@ -2,8 +2,10 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { Copy } from "lucide-react";
+import { useT } from "@/components/LocaleProvider";
 
 export default function TodaysCode({ code, error }: { code: string | null; error: string | null }) {
+  const t = useT();
   const [hidden, setHidden] = useState(true);
 
   if (error) {
@@ -13,7 +15,7 @@ export default function TodaysCode({ code, error }: { code: string | null; error
         style={{ background: "color-mix(in oklab, #ff8585 8%, transparent)", border: "1px solid color-mix(in oklab, #ff8585 30%, var(--line))" }}
       >
         <div className="text-[10px] tracking-[0.3em] uppercase" style={{ color: "#ff8585" }}>
-          Code unavailable
+          {t("admin.codeUnavailable")}
         </div>
         <p className="mt-2 text-sm" style={{ color: "var(--ink-0)" }}>
           {error}. Set <code>SHISHYA_CODE_SECRET</code> in env and restart.
@@ -28,7 +30,7 @@ export default function TodaysCode({ code, error }: { code: string | null; error
     if (!code) return;
     try {
       await navigator.clipboard.writeText(code);
-      toast.success("Copied");
+      toast.success(t("common.copied"));
     } catch {
       toast.error("Couldn't copy");
     }
@@ -44,7 +46,7 @@ export default function TodaysCode({ code, error }: { code: string | null; error
     >
       <div>
         <div className="text-[10px] tracking-[0.3em] uppercase" style={{ color: "var(--accent-soft)" }}>
-          Today&rsquo;s shishya code · IST
+          {t("admin.todayKicker")}
         </div>
         <div
           className="mt-2 font-display tracking-[0.25em]"
@@ -59,10 +61,10 @@ export default function TodaysCode({ code, error }: { code: string | null; error
       </div>
       <div className="flex items-center gap-2">
         <button onClick={() => setHidden((v) => !v)} className="btn btn-ghost text-sm py-2 px-4">
-          {hidden ? "Reveal" : "Hide"}
+          {hidden ? t("admin.reveal") : t("admin.hide")}
         </button>
         <button onClick={copy} className="btn text-sm py-2 px-4 inline-flex items-center gap-2">
-          <Copy size={14} /> Copy
+          <Copy size={14} /> {t("common.copy")}
         </button>
       </div>
     </div>

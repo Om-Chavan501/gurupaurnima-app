@@ -5,8 +5,10 @@ import { createClient } from "@/lib/supabase/server";
 import type { Profile, Instrument, Scale } from "@/lib/types";
 import { INSTRUMENTS, SCALES } from "@/lib/types";
 import AdminActions from "./AdminActions";
+import { getT } from "@/lib/i18n-server";
 
 export default async function ShishyaDetail({ params }: { params: Promise<{ id: string }> }) {
+  const t = await getT();
   const { id } = await params;
   const supabase = await createClient();
 
@@ -45,7 +47,7 @@ export default async function ShishyaDetail({ params }: { params: Promise<{ id: 
   return (
     <PageTransition>
       <div className="pt-6">
-        <Link href="/app/shishyas" className="btn-link text-sm">← All shishyas</Link>
+        <Link href="/app/shishyas" className="btn-link text-sm">{t("shishyaDetail.allShishyas")}</Link>
 
         <div className="mt-8 flex items-center gap-6">
           {profile.profile_pic_url ? (
@@ -58,19 +60,21 @@ export default async function ShishyaDetail({ params }: { params: Promise<{ id: 
           )}
           <div>
             <div className="text-xs tracking-[0.3em] uppercase" style={{ color: "var(--ink-2)" }}>
-              {profile.role}{profile.is_admin ? " · admin" : ""}{profile.is_verified ? " · verified" : ""}
+              {profile.role === "guru" ? t("role.guru") : profile.role === "shishya" ? t("role.shishya") : t("role.audience")}
+              {profile.is_admin ? ` · ${t("role.admin")}` : ""}
+              {profile.is_verified ? ` · ${t("role.verified")}` : ""}
             </div>
             <h1 className="font-display text-4xl mt-1">{profile.first_name} {profile.last_name}</h1>
           </div>
         </div>
 
         <dl className="mt-12 grid md:grid-cols-2 gap-y-6 gap-x-12 text-sm">
-          <Row label="Email" value={profile.email} />
-          <Row label="WhatsApp" value={phone ?? "—"} />
-          <Row label="Date of birth" value={profile.dob ?? "—"} />
-          <Row label="Gender" value={profile.gender?.replace(/_/g, " ") ?? "—"} />
+          <Row label={t("shishyaDetail.email")} value={profile.email} />
+          <Row label={t("shishyaDetail.whatsapp")} value={phone ?? "—"} />
+          <Row label={t("shishyaDetail.dob")} value={profile.dob ?? "—"} />
+          <Row label={t("shishyaDetail.gender")} value={profile.gender?.replace(/_/g, " ") ?? "—"} />
           {profile.role === "shishya" && (
-            <Row label="With Saurabh Dada" value={
+            <Row label={t("shishyaDetail.withGuru")} value={
               profile.years_with_guru || profile.months_with_guru
                 ? `${profile.years_with_guru ?? 0}y ${profile.months_with_guru ?? 0}m`
                 : "—"
@@ -78,29 +82,29 @@ export default async function ShishyaDetail({ params }: { params: Promise<{ id: 
           )}
           {canSeeLineage && inviter && (
             <Row
-              label="Invited by"
-              value={`${inviter.first_name} ${inviter.last_name}${profile.invited_as ? ` · as ${profile.invited_as}` : ""}`}
+              label={t("shishyaDetail.invitedBy")}
+              value={`${inviter.first_name} ${inviter.last_name}${profile.invited_as ? ` · ${profile.invited_as === "shishya" ? t("role.shishya") : t("role.audience")}` : ""}`}
             />
           )}
         </dl>
 
         <div className="mt-10 flex gap-3">
-          {waUrl && <a className="btn" href={waUrl} target="_blank">WhatsApp →</a>}
-          {telUrl && <a className="btn btn-ghost" href={telUrl}>Call</a>}
+          {waUrl && <a className="btn" href={waUrl} target="_blank">{t("shishyaDetail.whatsapp")} →</a>}
+          {telUrl && <a className="btn btn-ghost" href={telUrl}>{t("perf.callGuru")}</a>}
         </div>
 
         <div className={`mt-16 grid gap-10 ${profile.role === "shishya" ? "md:grid-cols-2" : "md:grid-cols-1"}`}>
           <div>
-            <div className="text-xs tracking-[0.3em] uppercase" style={{ color: "var(--ink-2)" }}>Suitable nights</div>
+            <div className="text-xs tracking-[0.3em] uppercase" style={{ color: "var(--ink-2)" }}>{t("shishyaDetail.suitableNights")}</div>
             <div className="mt-3 font-display text-2xl">
               {poll && poll.length > 0
-                ? poll.map((p) => p.date).join(", ")
-                : <span style={{ color: "var(--ink-2)" }}>Not chosen yet</span>}
+                ? poll.map((p) => t(`date.${p.date}`)).join(", ")
+                : <span style={{ color: "var(--ink-2)" }}>{t("shishyaDetail.notChosen")}</span>}
             </div>
           </div>
           {profile.role === "shishya" && (
           <div>
-            <div className="text-xs tracking-[0.3em] uppercase" style={{ color: "var(--ink-2)" }}>Composition</div>
+            <div className="text-xs tracking-[0.3em] uppercase" style={{ color: "var(--ink-2)" }}>{t("shishyaDetail.compositionLabel")}</div>
             {perf?.will_perform ? (
               <div className="mt-3">
                 <div className="font-display text-2xl">{perf.composition_name ?? "—"}</div>
@@ -115,7 +119,7 @@ export default async function ShishyaDetail({ params }: { params: Promise<{ id: 
               </div>
             ) : (
               <div className="mt-3 font-display text-2xl" style={{ color: "var(--ink-2)" }}>
-                {perf ? "Not performing" : "Hasn't decided"}
+                {perf ? t("shishyaDetail.notPerforming") : t("shishyaDetail.hasntDecided")}
               </div>
             )}
           </div>
@@ -124,10 +128,10 @@ export default async function ShishyaDetail({ params }: { params: Promise<{ id: 
 
         {(isAdminOrGuru || isSelf) && (
           <div className="mt-16">
-            <div className="text-xs tracking-[0.3em] uppercase mb-3" style={{ color: "var(--ink-2)" }}>Actions</div>
+            <div className="text-xs tracking-[0.3em] uppercase mb-3" style={{ color: "var(--ink-2)" }}>{t("shishyaDetail.actions")}</div>
             <div className="flex flex-wrap gap-3">
-              {isSelf && <Link href="/app/profile" className="btn btn-ghost">Edit my profile</Link>}
-              {isSelf && <Link href="/app/performances/mine" className="btn btn-ghost">Edit my composition</Link>}
+              {isSelf && <Link href="/app/profile" className="btn btn-ghost">{t("shishyaDetail.editMine")}</Link>}
+              {isSelf && profile.role === "shishya" && <Link href="/app/performances/mine" className="btn btn-ghost">{t("shishyaDetail.editMyComp")}</Link>}
               {isAdminOrGuru && (
                 <AdminActions
                   targetId={profile.id}

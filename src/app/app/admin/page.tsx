@@ -6,6 +6,7 @@ import { todaysShishyaCode } from "@/lib/shishyaCode";
 import type { AdminRequest, InviteCode, Profile } from "@/lib/types";
 import RequestDecisionRow from "./RequestDecisionRow";
 import TodaysCode from "./TodaysCode";
+import { getT } from "@/lib/i18n-server";
 
 type RequestWithUser = AdminRequest & {
   user: Pick<Profile, "id" | "first_name" | "last_name" | "email" | "role" | "is_verified"> | null;
@@ -15,6 +16,7 @@ type CodeWithCreator = InviteCode & {
 };
 
 export default async function AdminConsole() {
+  const t = await getT();
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
@@ -54,13 +56,13 @@ export default async function AdminConsole() {
     <PageTransition>
       <section className="pt-2 md:pt-6">
         <div className="text-[11px] tracking-[0.32em] uppercase mb-3" style={{ color: "var(--ink-2)" }}>
-          Admin console
+          {t("admin.kicker")}
         </div>
         <h1 className="font-display" style={{ fontSize: "clamp(34px, 5.5vw, 54px)", lineHeight: 1.05 }}>
-          The back room.
+          {t("admin.h1")}
         </h1>
         <p className="mt-3 max-w-xl text-[15px]" style={{ color: "var(--ink-1)" }}>
-          Today&rsquo;s shishya code, requests waiting on you, and recent invites at a glance.
+          {t("admin.intro")}
         </p>
       </section>
 
@@ -70,8 +72,7 @@ export default async function AdminConsole() {
       <section className="pt-8">
         <TodaysCode code={code} error={codeError} />
         <p className="mt-3 text-xs" style={{ color: "var(--ink-2)" }}>
-          Rotates at 00:00 IST. Yesterday&rsquo;s code is also accepted for a few hours after midnight as a grace window.
-          Share it via WhatsApp or wherever convenient — anyone with the code can sign up as a shishya today.
+          {t("admin.todayNote")}
         </p>
       </section>
 
@@ -80,14 +81,14 @@ export default async function AdminConsole() {
       {/* ===== Pending requests ===== */}
       <section className="pt-8">
         <div className="flex items-baseline justify-between gap-4">
-          <h2 className="font-display text-2xl md:text-3xl">Pending requests</h2>
+          <h2 className="font-display text-2xl md:text-3xl">{t("admin.pendingRequests")}</h2>
           <span className="text-[11px] tracking-[0.3em] uppercase" style={{ color: "var(--ink-2)" }}>
             {pending.length}
           </span>
         </div>
 
         {pending.length === 0 ? (
-          <p className="mt-5 text-sm" style={{ color: "var(--ink-2)" }}>Nothing waiting.</p>
+          <p className="mt-5 text-sm" style={{ color: "var(--ink-2)" }}>{t("admin.nothingWaiting")}</p>
         ) : (
           <ul className="mt-5 divide-y" style={{ borderColor: "var(--line)" }}>
             {pending.map((r) => (
@@ -104,12 +105,12 @@ export default async function AdminConsole() {
       {/* ===== Recent invites ===== */}
       <section className="pt-8 pb-6">
         <div className="flex items-baseline justify-between gap-4">
-          <h2 className="font-display text-2xl md:text-3xl">Recent invites</h2>
-          <Link href="/app/invite" className="btn btn-ghost text-sm py-2 px-4">Create one</Link>
+          <h2 className="font-display text-2xl md:text-3xl">{t("admin.recentInvites")}</h2>
+          <Link href="/app/invite" className="btn btn-ghost text-sm py-2 px-4">{t("admin.createOne")}</Link>
         </div>
 
         {invites.length === 0 ? (
-          <p className="mt-5 text-sm" style={{ color: "var(--ink-2)" }}>No invites have been generated yet.</p>
+          <p className="mt-5 text-sm" style={{ color: "var(--ink-2)" }}>{t("admin.noInvites")}</p>
         ) : (
           <ul className="mt-5 divide-y" style={{ borderColor: "var(--line)" }}>
             {invites.map((inv) => {
@@ -125,7 +126,7 @@ export default async function AdminConsole() {
                       </span>
                     </div>
                     <div className="text-xs" style={{ color: revoked ? "#ff8585" : expired ? "var(--ink-2)" : "var(--accent-soft)" }}>
-                      {revoked ? "revoked" : expired ? "expired" : `${inv.redeemed_count} used · ${formatRemaining(inv.expires_at)}`}
+                      {revoked ? t("common.revoked") : expired ? t("common.expired") : `${inv.redeemed_count} ${t("common.used")} · ${formatRemaining(inv.expires_at)}`}
                     </div>
                   </div>
                   {inv.label && (

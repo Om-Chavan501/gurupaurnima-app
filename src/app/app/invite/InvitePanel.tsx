@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Copy } from "lucide-react";
 import { createInviteCode, revokeInviteCode, raiseAdminRequest } from "@/lib/actions";
 import type { InviteCode } from "@/lib/types";
+import { useT } from "@/components/LocaleProvider";
 
 type Props = {
   canCreate: boolean;
@@ -15,6 +16,7 @@ type Props = {
 
 export default function InvitePanel({ canCreate, mine, userId: _userId }: Props) {
   void _userId;
+  const t = useT();
   const router = useRouter();
   const [label, setLabel] = useState("");
   const [pending, start] = useTransition();
@@ -26,7 +28,7 @@ export default function InvitePanel({ canCreate, mine, userId: _userId }: Props)
       if (r.ok) {
         setJustCreated(r.code ?? null);
         setLabel("");
-        toast.success("Invite created");
+        toast.success(t("invite.created"));
         router.refresh();
       } else {
         toast.error(r.error);
@@ -37,7 +39,7 @@ export default function InvitePanel({ canCreate, mine, userId: _userId }: Props)
   function revoke(code: string) {
     start(async () => {
       const r = await revokeInviteCode(code);
-      if (r.ok) { toast.success("Revoked"); router.refresh(); }
+      if (r.ok) { toast.success(t("common.revoked")); router.refresh(); }
       else toast.error(r.error);
     });
   }
@@ -45,13 +47,13 @@ export default function InvitePanel({ canCreate, mine, userId: _userId }: Props)
   function askVerify() {
     start(async () => {
       const r = await raiseAdminRequest("verify");
-      if (r.ok) toast.success("Request sent");
+      if (r.ok) toast.success(t("invite.requestSent"));
       else toast.error(r.error);
     });
   }
 
   async function copy(text: string) {
-    try { await navigator.clipboard.writeText(text); toast.success("Copied"); }
+    try { await navigator.clipboard.writeText(text); toast.success(t("common.copied")); }
     catch { toast.error("Couldn't copy"); }
   }
 
@@ -70,15 +72,14 @@ export default function InvitePanel({ canCreate, mine, userId: _userId }: Props)
         }}
       >
         <div className="text-[10px] tracking-[0.3em] uppercase" style={{ color: "var(--ink-2)" }}>
-          You&rsquo;re not verified yet
+          {t("invite.notVerifiedKicker")}
         </div>
         <p className="mt-2 text-[15px]" style={{ color: "var(--ink-1)" }}>
-          Only verified shishyas (and the guru) can generate invite codes. Ask an admin to verify you, or
-          send a request now.
+          {t("invite.notVerifiedBody")}
         </p>
         <div className="mt-4 flex flex-wrap gap-3">
-          <button onClick={askVerify} disabled={pending} className="btn">Request verification</button>
-          <Link href="/app/profile" className="btn btn-ghost">Or contact an admin →</Link>
+          <button onClick={askVerify} disabled={pending} className="btn">{t("invite.requestVerification")}</button>
+          <Link href="/app/profile" className="btn btn-ghost">{t("invite.contactAdmin")}</Link>
         </div>
       </div>
     );
@@ -95,17 +96,17 @@ export default function InvitePanel({ canCreate, mine, userId: _userId }: Props)
         }}
       >
         <div className="field-group">
-          <label>Label (optional)</label>
+          <label>{t("invite.labelInput")}</label>
           <input
             className="field"
             value={label}
             onChange={(e) => setLabel(e.target.value)}
-            placeholder='e.g. "for Anita’s parents"'
+            placeholder={t("invite.labelPlaceholder")}
             maxLength={80}
           />
         </div>
         <button onClick={create} disabled={pending} className="btn mt-4">
-          {pending ? "Creating…" : "Generate code"}
+          {pending ? t("invite.creating") : t("invite.generate")}
         </button>
       </div>
 
@@ -119,30 +120,30 @@ export default function InvitePanel({ canCreate, mine, userId: _userId }: Props)
           }}
         >
           <div className="text-[10px] tracking-[0.3em] uppercase" style={{ color: "var(--accent-soft)" }}>
-            New code
+            {t("invite.newKicker")}
           </div>
           <div className="mt-2 font-display tracking-[0.25em]" style={{ fontSize: "clamp(36px, 6vw, 52px)", color: "var(--ink-0)" }}>
             {justCreated}
           </div>
           <div className="mt-4 flex flex-wrap gap-2">
             <button onClick={() => copy(justCreated)} className="btn text-sm py-2 px-4 inline-flex items-center gap-2">
-              <Copy size={14} /> Copy code
+              <Copy size={14} /> {t("invite.copyCode")}
             </button>
             <button onClick={() => copy(shareUrl(justCreated))} className="btn btn-ghost text-sm py-2 px-4 inline-flex items-center gap-2">
-              <Copy size={14} /> Copy signup link
+              <Copy size={14} /> {t("invite.copyLink")}
             </button>
           </div>
           <p className="mt-3 text-xs" style={{ color: "var(--ink-2)" }}>
-            Share it via WhatsApp. Whoever signs up with it joins as audience; you&rsquo;ll be listed as their inviter.
+            {t("invite.shareNote")}
           </p>
         </div>
       )}
 
       {/* Mine */}
       <div className="mt-10">
-        <h2 className="font-display text-2xl md:text-3xl">Your codes</h2>
+        <h2 className="font-display text-2xl md:text-3xl">{t("invite.yours")}</h2>
         {mine.length === 0 ? (
-          <p className="mt-4 text-sm" style={{ color: "var(--ink-2)" }}>You haven&rsquo;t made any yet.</p>
+          <p className="mt-4 text-sm" style={{ color: "var(--ink-2)" }}>{t("invite.noneYet")}</p>
         ) : (
           <ul className="mt-5 divide-y" style={{ borderColor: "var(--line)" }}>
             {mine.map((c) => {
@@ -161,15 +162,15 @@ export default function InvitePanel({ canCreate, mine, userId: _userId }: Props)
                       )}
                     </div>
                     <div className="text-xs" style={{ color: revoked ? "#ff8585" : expired ? "var(--ink-2)" : "var(--accent-soft)" }}>
-                      {revoked ? "revoked" : expired ? "expired" : `${c.redeemed_count} used`}
+                      {revoked ? t("common.revoked") : expired ? t("common.expired") : `${c.redeemed_count} ${t("common.used")}`}
                     </div>
                   </div>
                   <div className="mt-2 flex flex-wrap gap-2">
-                    <button onClick={() => copy(c.code)} className="btn btn-ghost text-xs py-1.5 px-3">Copy</button>
-                    <button onClick={() => copy(shareUrl(c.code))} className="btn btn-ghost text-xs py-1.5 px-3">Copy link</button>
+                    <button onClick={() => copy(c.code)} className="btn btn-ghost text-xs py-1.5 px-3">{t("common.copy")}</button>
+                    <button onClick={() => copy(shareUrl(c.code))} className="btn btn-ghost text-xs py-1.5 px-3">{t("invite.copyLink")}</button>
                     {!inactive && (
                       <button onClick={() => revoke(c.code)} disabled={pending} className="btn-link text-xs" style={{ color: "#ff8585" }}>
-                        Revoke
+                        {t("common.revoke")}
                       </button>
                     )}
                   </div>

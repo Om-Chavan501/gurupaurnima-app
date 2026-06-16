@@ -1,8 +1,10 @@
 import PageTransition from "@/components/PageTransition";
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
+import { getT } from "@/lib/i18n-server";
 
 export default async function WhatsappPage() {
+  const t = await getT();
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   const { data: profile } = await supabase.from("profiles").select("is_verified, role, first_name").eq("id", user!.id).single();
@@ -14,31 +16,31 @@ export default async function WhatsappPage() {
     <PageTransition>
       <div className="pt-6 md:pt-10 max-w-xl">
         <div className="text-[11px] tracking-[0.32em] uppercase mb-3" style={{ color: "var(--ink-2)" }}>
-          The group chat
+          {t("whatsapp.kicker")}
         </div>
         {isVerified ? (
           <>
             <h1 className="font-display" style={{ fontSize: "clamp(34px, 5.5vw, 50px)", lineHeight: 1.05 }}>
-              Step in, {profile?.first_name}.
+              {t("whatsapp.welcomeH1", { name: profile?.first_name ?? "" })}
             </h1>
             <p className="mt-5 text-[15px] md:text-base" style={{ color: "var(--ink-1)" }}>
-              Rehearsal threads, last-minute updates, and Saurabh Dada&rsquo;s voice notes live here.
+              {t("whatsapp.welcomeBody")}
             </p>
             {link ? (
-              <a href={link} target="_blank" className="btn mt-9">Open WhatsApp group</a>
+              <a href={link} target="_blank" className="btn mt-9">{t("whatsapp.openBtn")}</a>
             ) : (
-              <p className="mt-8 text-sm" style={{ color: "var(--ink-2)" }}>(Group link not configured yet.)</p>
+              <p className="mt-8 text-sm" style={{ color: "var(--ink-2)" }}>{t("whatsapp.linkNotConfigured")}</p>
             )}
           </>
         ) : (
           <>
             <h1 className="font-display" style={{ fontSize: "clamp(34px, 5.5vw, 50px)", lineHeight: 1.05 }}>
-              Almost.
+              {t("whatsapp.notReadyH1")}
             </h1>
             <p className="mt-5 text-[15px]" style={{ color: "var(--ink-1)" }}>
-              The WhatsApp group is shared only with verified shishyas. Once Saurabh Dada or a senior shishya marks you verified, this page opens up.
+              {t("whatsapp.notReadyBody")}
             </p>
-            <Link href="/app" className="btn btn-ghost mt-9">← Home</Link>
+            <Link href="/app" className="btn btn-ghost mt-9">{t("authError.home")}</Link>
           </>
         )}
       </div>

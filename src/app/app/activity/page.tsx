@@ -4,6 +4,7 @@ import PageTransition from "@/components/PageTransition";
 import { createClient } from "@/lib/supabase/server";
 import { labelForAction } from "@/lib/activityLabels";
 import MarkRead from "./MarkRead";
+import { getT } from "@/lib/i18n-server";
 
 type Row = {
   id: number;
@@ -17,6 +18,7 @@ type Row = {
 type ProfileLite = { id: string; first_name: string; last_name: string; profile_pic_url: string | null };
 
 export default async function ActivityPage() {
+  const t = await getT();
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
@@ -52,12 +54,12 @@ export default async function ActivityPage() {
   return (
     <PageTransition>
       <section className="pt-6">
-        <div className="text-xs tracking-[0.4em] uppercase mb-3" style={{ color: "var(--ink-2)" }}>Activity</div>
+        <div className="text-xs tracking-[0.4em] uppercase mb-3" style={{ color: "var(--ink-2)" }}>{t("activity.kicker")}</div>
         <h1 className="font-display" style={{ fontSize: "clamp(34px, 5.5vw, 54px)", lineHeight: 1.05 }}>
-          What changed lately.
+          {t("activity.h1")}
         </h1>
         <p className="mt-3" style={{ color: "var(--ink-1)" }}>
-          Visible to gurus &amp; admin shishyas only. Most recent first.
+          {t("activity.intro")}
         </p>
 
         <MarkRead />
@@ -103,7 +105,7 @@ export default async function ActivityPage() {
             );
           })}
           {rows.length === 0 && (
-            <li className="py-8 text-center" style={{ color: "var(--ink-2)" }}>Nothing has stirred yet.</li>
+            <li className="py-8 text-center" style={{ color: "var(--ink-2)" }}>{t("activity.nothing")}</li>
           )}
         </ul>
       </section>

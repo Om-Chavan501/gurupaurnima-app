@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { COUNTRIES, DEFAULT_COUNTRY } from "@/lib/countries";
 import type { Gender, Role } from "@/lib/types";
 import AvatarPicker from "@/components/AvatarPicker";
+import { useT } from "@/components/LocaleProvider";
 
 type Props = {
   userId: string;
@@ -20,6 +21,7 @@ type Props = {
 export default function ProfileSetupForm({
   userId, email, initialFirst, initialLast, intendedRole, invitedBy, inviteCode,
 }: Props) {
+  const t = useT();
   const router = useRouter();
   const [first, setFirst] = useState(initialFirst);
   const [last, setLast] = useState(initialLast);
@@ -37,7 +39,7 @@ export default function ProfileSetupForm({
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!first || !last || !dob || !gender || !phone) {
-      toast.error("Please fill all required fields");
+      toast.error(t("common.required"));
       return;
     }
     setBusy(true);
@@ -95,7 +97,7 @@ export default function ProfileSetupForm({
     }
 
     setBusy(false);
-    toast.success("Welcome.");
+    toast.success(t("signup.profile.welcome"));
     router.push("/app");
   }
 
@@ -103,30 +105,30 @@ export default function ProfileSetupForm({
     <form onSubmit={submit} className="mt-10 space-y-7">
       <div className="grid grid-cols-2 gap-4">
         <div className="field-group">
-          <label>First name *</label>
+          <label>{t("signup.form.firstName")} *</label>
           <input className="field" value={first} onChange={(e) => setFirst(e.target.value)} />
         </div>
         <div className="field-group">
-          <label>Last name *</label>
+          <label>{t("signup.form.lastName")} *</label>
           <input className="field" value={last} onChange={(e) => setLast(e.target.value)} />
         </div>
       </div>
 
       <div className="grid md:grid-cols-2 gap-4">
         <div className="field-group">
-          <label>Date of birth *</label>
+          <label>{t("signup.profile.dob")}</label>
           <input className="field" type="date" value={dob} onChange={(e) => setDob(e.target.value)} />
         </div>
         <div className="field-group">
-          <label>Joining as</label>
+          <label>{t("signup.profile.joiningAs")}</label>
           <div className="pt-2 text-base" style={{ color: "var(--ink-0)" }}>
-            {role === "shishya" ? "Shishya" : "Audience · श्रोता"}
+            {role === "shishya" ? t("role.shishya") : t("role.audience")}
           </div>
         </div>
       </div>
 
       <div className="field-group">
-        <label>Gender *</label>
+        <label>{t("signup.profile.gender")}</label>
         <div className="flex flex-wrap gap-3 pt-2">
           {(["male","female","other","prefer_not_to_say"] as Gender[]).map((g) => (
             <button
@@ -147,7 +149,7 @@ export default function ProfileSetupForm({
       </div>
 
       <div className="field-group">
-        <label>WhatsApp number *</label>
+        <label>{t("signup.profile.whatsapp")}</label>
         <div className="flex gap-3">
           <select className="field" style={{ maxWidth: 150 }} value={country} onChange={(e) => setCountry(e.target.value)}>
             {COUNTRIES.map((c) => (
@@ -162,16 +164,16 @@ export default function ProfileSetupForm({
 
       {role === "shishya" && (
         <div className="field-group">
-          <label>How long with Saurabh Dada? (optional)</label>
+          <label>{t("signup.profile.howLong")}</label>
           <div className="flex gap-3">
-            <input className="field" type="number" min="0" placeholder="Years" value={years} onChange={(e) => setYears(e.target.value)} />
-            <input className="field" type="number" min="0" max="11" placeholder="Months" value={months} onChange={(e) => setMonths(e.target.value)} />
+            <input className="field" type="number" min="0" placeholder={t("signup.profile.years")} value={years} onChange={(e) => setYears(e.target.value)} />
+            <input className="field" type="number" min="0" max="11" placeholder={t("signup.profile.months")} value={months} onChange={(e) => setMonths(e.target.value)} />
           </div>
         </div>
       )}
 
       <div className="field-group">
-        <label>Profile picture (optional)</label>
+        <label>{t("signup.profile.pic")}</label>
         <div className="pt-2">
           <AvatarPicker
             initials={`${(first[0] ?? "").toUpperCase()}${(last[0] ?? "").toUpperCase()}` || "·"}
@@ -182,7 +184,7 @@ export default function ProfileSetupForm({
 
       <div className="pt-2 flex items-center justify-end">
         <button className="btn" disabled={busy} type="submit">
-          {busy ? "Saving…" : "Done — take me in"}
+          {busy ? t("signup.profile.submitting") : t("signup.profile.submit")}
         </button>
       </div>
     </form>

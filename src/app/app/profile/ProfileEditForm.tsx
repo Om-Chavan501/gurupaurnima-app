@@ -7,8 +7,10 @@ import type { Profile, Gender } from "@/lib/types";
 import { createClient } from "@/lib/supabase/client";
 import { updateProfileBasics } from "@/lib/actions";
 import AvatarPicker from "@/components/AvatarPicker";
+import { useT } from "@/components/LocaleProvider";
 
 export default function ProfileEditForm({ profile }: { profile: Profile }) {
+  const t = useT();
   const router = useRouter();
   const [first, setFirst] = useState(profile.first_name);
   const [last, setLast] = useState(profile.last_name);
@@ -29,7 +31,7 @@ export default function ProfileEditForm({ profile }: { profile: Profile }) {
       await supabase.from("profiles").update({ profile_pic_url: null }).eq("id", profile.id);
       setPicUrl(null);
       router.refresh();
-      toast.success("Picture removed");
+      toast.success(t("profile.remove"));
       return;
     }
     setUploading(true);
@@ -48,7 +50,7 @@ export default function ProfileEditForm({ profile }: { profile: Profile }) {
     setPicUrl(data.publicUrl);
     setUploading(false);
     router.refresh();
-    toast.success("Picture updated");
+    toast.success(t("profile.changePicture"));
   }
 
   function save() {
@@ -64,7 +66,7 @@ export default function ProfileEditForm({ profile }: { profile: Profile }) {
         years_with_guru: years ? Number(years) : null,
         months_with_guru: months ? Number(months) : null,
       });
-      if (r.ok) { toast.success("Saved."); router.refresh(); }
+      if (r.ok) { toast.success(t("profile.saved")); router.refresh(); }
       else toast.error(r.error);
     });
   }
@@ -76,26 +78,26 @@ export default function ProfileEditForm({ profile }: { profile: Profile }) {
         initials={`${(first[0] ?? "").toUpperCase()}${(last[0] ?? "").toUpperCase()}`}
         onChange={onPick}
       />
-      {uploading && <div className="text-xs" style={{ color: "var(--ink-2)" }}>Uploading…</div>}
+      {uploading && <div className="text-xs" style={{ color: "var(--ink-2)" }}>{t("profile.uploading")}</div>}
 
       <div className="grid grid-cols-2 gap-4">
         <div className="field-group">
-          <label>First name</label>
+          <label>{t("signup.form.firstName")}</label>
           <input className="field" value={first} onChange={(e) => setFirst(e.target.value)} />
         </div>
         <div className="field-group">
-          <label>Last name</label>
+          <label>{t("signup.form.lastName")}</label>
           <input className="field" value={last} onChange={(e) => setLast(e.target.value)} />
         </div>
       </div>
 
       <div className="grid md:grid-cols-2 gap-4">
         <div className="field-group">
-          <label>Date of birth</label>
+          <label>{t("shishyaDetail.dob")}</label>
           <input className="field" type="date" value={dob} onChange={(e) => setDob(e.target.value)} />
         </div>
         <div className="field-group">
-          <label>Gender</label>
+          <label>{t("shishyaDetail.gender")}</label>
           <select className="field" value={gender} onChange={(e) => setGender(e.target.value as Gender)}>
             {(["male","female","other","prefer_not_to_say"] as Gender[]).map((g) => (
               <option key={g} value={g} style={{ background: "var(--bg-1)" }}>{g.replace(/_/g, " ")}</option>
@@ -105,7 +107,7 @@ export default function ProfileEditForm({ profile }: { profile: Profile }) {
       </div>
 
       <div className="field-group">
-        <label>WhatsApp</label>
+        <label>{t("shishyaDetail.whatsapp")}</label>
         <div className="flex gap-3">
           <select className="field" style={{ maxWidth: 150 }} value={country} onChange={(e) => setCountry(e.target.value)}>
             {COUNTRIES.map((c) => (
@@ -119,18 +121,18 @@ export default function ProfileEditForm({ profile }: { profile: Profile }) {
       </div>
 
       <div className="field-group">
-        <label>With Saurabh Dada</label>
+        <label>{t("shishyaDetail.withGuru")}</label>
         <div className="flex gap-3">
-          <input className="field" type="number" min="0" placeholder="Years" value={years} onChange={(e) => setYears(e.target.value)} />
-          <input className="field" type="number" min="0" max="11" placeholder="Months" value={months} onChange={(e) => setMonths(e.target.value)} />
+          <input className="field" type="number" min="0" placeholder={t("signup.profile.years")} value={years} onChange={(e) => setYears(e.target.value)} />
+          <input className="field" type="number" min="0" max="11" placeholder={t("signup.profile.months")} value={months} onChange={(e) => setMonths(e.target.value)} />
         </div>
       </div>
 
       <div className="pt-2 flex items-center justify-between">
         <form action="/logout" method="post">
-          <button className="btn-link text-sm">Sign out</button>
+          <button className="btn-link text-sm">{t("profile.signOut")}</button>
         </form>
-        <button onClick={save} disabled={pending} className="btn">{pending ? "…" : "Save"}</button>
+        <button onClick={save} disabled={pending} className="btn">{pending ? "…" : t("common.save")}</button>
       </div>
     </div>
   );

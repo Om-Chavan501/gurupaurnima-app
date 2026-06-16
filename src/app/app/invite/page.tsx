@@ -3,8 +3,10 @@ import PageTransition from "@/components/PageTransition";
 import { createClient } from "@/lib/supabase/server";
 import type { InviteCode } from "@/lib/types";
 import InvitePanel from "./InvitePanel";
+import { getT } from "@/lib/i18n-server";
 
 export default async function InvitePage() {
+  const t = await getT();
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
@@ -29,14 +31,13 @@ export default async function InvitePage() {
     <PageTransition>
       <section className="pt-2 md:pt-6">
         <div className="text-[11px] tracking-[0.32em] uppercase mb-3" style={{ color: "var(--ink-2)" }}>
-          Invite someone
+          {t("invite.kicker")}
         </div>
         <h1 className="font-display" style={{ fontSize: "clamp(34px, 5.5vw, 54px)", lineHeight: 1.05 }}>
-          Bring an audience.
+          {t("invite.h1")}
         </h1>
         <p className="mt-3 max-w-xl text-[15px]" style={{ color: "var(--ink-1)" }}>
-          Generate a 6-character code and share it with someone you&rsquo;d like to bring as audience.
-          Each code is good for 24 hours and can be used by multiple people.
+          {t("invite.intro")}
         </p>
       </section>
 
