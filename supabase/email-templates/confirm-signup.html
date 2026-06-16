@@ -2,49 +2,67 @@
 <html>
 <head>
 <meta charset="utf-8" />
+<meta name="color-scheme" content="light dark" />
+<meta name="supported-color-schemes" content="light dark" />
 <title>Confirm your email</title>
+<style>
+  :root { color-scheme: light dark; }
+  @media (prefers-color-scheme: dark) {
+    .bg-wrap  { background: #1a1420 !important; }
+    .bg-cell  { background: #1a1420 !important; }
+    .t-head   { color: #8a7f8e !important; }
+    .t-h1     { color: #f1ebe2 !important; }
+    .t-body   { color: #cdc2b8 !important; }
+    .t-foot   { color: #8a7f8e !important; }
+    .t-link   { color: #e6c180 !important; }
+    .t-border { border-top-color: rgba(204,155,84,0.18) !important; }
+    a.t-foot-a { color: #8a7f8e !important; }
+  }
+</style>
 </head>
-<body style="margin:0; padding:0; background:#1a1420; color:#f1ebe2; font-family:'Helvetica Neue', Arial, sans-serif;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#1a1420;">
+<body class="bg-wrap" style="margin:0;padding:0;background:#faf8f5;color:#1a1420;font-family:'Helvetica Neue',Arial,sans-serif;">
+  <table class="bg-wrap" role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#faf8f5;">
     <tr>
       <td align="center" style="padding:48px 16px;">
-        <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="max-width:560px; width:100%;">
+        <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;">
           <tr>
-            <td style="padding-bottom:8px; font-size:11px; letter-spacing:0.35em; text-transform:uppercase; color:#8a7f8e;">
+            <td class="t-head" style="padding-bottom:8px;font-size:11px;letter-spacing:0.35em;text-transform:uppercase;color:#7a6b8f;">
               Gurupaurnima 2026
             </td>
           </tr>
           <tr>
             <td style="padding-bottom:24px;">
-              <div style="font-family: Georgia, 'Times New Roman', serif; font-size:38px; line-height:1.05; color:#f1ebe2;">
+              <div class="t-h1" style="font-family:Georgia,'Times New Roman',serif;font-size:38px;line-height:1.05;color:#1a1420;">
                 One last step.
               </div>
             </td>
           </tr>
           <tr>
-            <td style="color:#cdc2b8; font-size:15px; line-height:1.6; padding-bottom:32px;">
+            <td class="t-body" style="color:#4a3f55;font-size:15px;line-height:1.6;padding-bottom:32px;">
               Tap below to confirm your email and finish signing up.
               This link is good for the next 24 hours.
             </td>
           </tr>
           <tr>
             <td style="padding-bottom:48px;">
-              <a href="{{ .ConfirmationURL }}" style="display:inline-block; padding:14px 28px; border-radius:999px; background:#cc9b54; color:#1a1420; text-decoration:none; font-weight:500; letter-spacing:0.04em;">
+              <a href="{{ .ConfirmationURL }}" style="display:inline-block;padding:14px 28px;border-radius:999px;background:#cc9b54;color:#1a1420;text-decoration:none;font-weight:500;letter-spacing:0.04em;">
                 Confirm &amp; enter →
               </a>
             </td>
           </tr>
           <tr>
-            <td style="border-top:1px solid rgba(204, 155, 84, 0.18); padding-top:16px; font-size:11px; color:#8a7f8e; line-height:1.6;">
-              If the button doesn&rsquo;t open, copy this link:<br />
-              <span style="color:#e6c180; word-break:break-all;">{{ .ConfirmationURL }}</span>
+            <td class="t-border" style="border-top:1px solid rgba(204,155,84,0.25);padding-top:16px;font-size:11px;line-height:1.6;">
+              <span class="t-head" style="color:#7a6b8f;">If the button doesn&rsquo;t open, copy this link:</span><br />
+              <span class="t-link" style="color:#8a4a00;word-break:break-all;">{{ .ConfirmationURL }}</span>
             </td>
           </tr>
           <tr>
-            <td style="padding-top:32px; font-size:11px; color:#7a6b8f; line-height:1.6;">
-              You&rsquo;re receiving this because someone (probably you) signed up at
-              <a href="{{ .SiteURL }}" style="color:#8a7f8e;">{{ .SiteURL }}</a>.<br />
-              If it wasn&rsquo;t you, simply ignore this email.
+            <td style="padding-top:32px;font-size:11px;line-height:1.6;">
+              <span class="t-foot" style="color:#7a6b8f;">
+                You&rsquo;re receiving this because someone (probably you) signed up at
+                <a href="{{ .SiteURL }}" class="t-foot-a" style="color:#7a6b8f;">{{ .SiteURL }}</a>.<br />
+                If it wasn&rsquo;t you, simply ignore this email.
+              </span>
             </td>
           </tr>
         </table>

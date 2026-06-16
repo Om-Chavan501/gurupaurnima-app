@@ -2,41 +2,54 @@
 <html>
 <head>
 <meta charset="utf-8" />
+<meta name="color-scheme" content="light dark" />
+<meta name="supported-color-schemes" content="light dark" />
 <title>Sign in</title>
+<style>
+  :root { color-scheme: light dark; }
+  @media (prefers-color-scheme: dark) {
+    .bg-wrap { background: #1a1420 !important; }
+    .t-head  { color: #8a7f8e !important; }
+    .t-h1    { color: #f1ebe2 !important; }
+    .t-body  { color: #cdc2b8 !important; }
+    .t-foot  { color: #8a7f8e !important; }
+    .t-link  { color: #e6c180 !important; }
+  }
+</style>
 </head>
-<body style="margin:0; padding:0; background:#1a1420; color:#f1ebe2; font-family:'Helvetica Neue', Arial, sans-serif;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#1a1420;">
+<body class="bg-wrap" style="margin:0;padding:0;background:#faf8f5;color:#1a1420;font-family:'Helvetica Neue',Arial,sans-serif;">
+  <table class="bg-wrap" role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#faf8f5;">
     <tr>
       <td align="center" style="padding:48px 16px;">
-        <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="max-width:560px; width:100%;">
+        <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;">
           <tr>
-            <td style="padding-bottom:8px; font-size:11px; letter-spacing:0.35em; text-transform:uppercase; color:#8a7f8e;">
+            <td class="t-head" style="padding-bottom:8px;font-size:11px;letter-spacing:0.35em;text-transform:uppercase;color:#7a6b8f;">
               Gurupaurnima 2026
             </td>
           </tr>
           <tr>
             <td style="padding-bottom:24px;">
-              <div style="font-family:Georgia, 'Times New Roman', serif; font-size:42px; line-height:1.05; color:#f1ebe2;">
+              <div class="t-h1" style="font-family:Georgia,'Times New Roman',serif;font-size:42px;line-height:1.05;color:#1a1420;">
                 Welcome back.
               </div>
             </td>
           </tr>
           <tr>
-            <td style="color:#cdc2b8; font-size:15px; line-height:1.6; padding-bottom:32px;">
+            <td class="t-body" style="color:#4a3f55;font-size:15px;line-height:1.6;padding-bottom:32px;">
               Click below to sign in. The link is good for the next hour.
             </td>
           </tr>
           <tr>
             <td style="padding-bottom:48px;">
-              <a href="{{ .ConfirmationURL }}" style="display:inline-block; padding:14px 28px; border-radius:999px; background:#cc9b54; color:#1a1420; text-decoration:none; font-weight:500; letter-spacing:0.04em;">
+              <a href="{{ .ConfirmationURL }}" style="display:inline-block;padding:14px 28px;border-radius:999px;background:#cc9b54;color:#1a1420;text-decoration:none;font-weight:500;letter-spacing:0.04em;">
                 Sign in →
               </a>
             </td>
           </tr>
           <tr>
-            <td style="border-top:1px solid rgba(204, 155, 84, 0.18); padding-top:16px; font-size:11px; color:#8a7f8e; line-height:1.6;">
-              Or paste this into your browser:<br />
-              <span style="color:#e6c180; word-break:break-all;">{{ .ConfirmationURL }}</span>
+            <td style="border-top:1px solid rgba(204,155,84,0.25);padding-top:16px;font-size:11px;line-height:1.6;">
+              <span class="t-foot" style="color:#7a6b8f;">Or paste this into your browser:</span><br />
+              <span class="t-link" style="color:#8a4a00;word-break:break-all;">{{ .ConfirmationURL }}</span>
             </td>
           </tr>
         </table>
