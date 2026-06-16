@@ -117,36 +117,49 @@ alter table performances enable row level security;
 alter table activity_log enable row level security;
 
 -- profiles: any authenticated user can read; users can update self; admin/guru can update anyone
+drop policy if exists profiles_read_authed on profiles;
 create policy profiles_read_authed on profiles
   for select to authenticated using (true);
+drop policy if exists profiles_insert_self on profiles;
 create policy profiles_insert_self on profiles
   for insert to authenticated with check (id = auth.uid());
+drop policy if exists profiles_update_self on profiles;
 create policy profiles_update_self on profiles
   for update to authenticated using (id = auth.uid()) with check (id = auth.uid());
+drop policy if exists profiles_update_admin on profiles;
 create policy profiles_update_admin on profiles
   for update to authenticated using (is_admin_or_guru(auth.uid())) with check (true);
+drop policy if exists profiles_delete_admin on profiles;
 create policy profiles_delete_admin on profiles
   for delete to authenticated using (is_admin_or_guru(auth.uid()));
 
 -- attendance_poll: read all, write own, admin/guru can write anyone
+drop policy if exists poll_read on attendance_poll;
 create policy poll_read on attendance_poll
   for select to authenticated using (true);
+drop policy if exists poll_write_self on attendance_poll;
 create policy poll_write_self on attendance_poll
   for all to authenticated using (user_id = auth.uid()) with check (user_id = auth.uid());
+drop policy if exists poll_write_admin on attendance_poll;
 create policy poll_write_admin on attendance_poll
   for all to authenticated using (is_admin_or_guru(auth.uid())) with check (true);
 
 -- performances: read all, write own (any signed-up shishya, no is_verified gate), admin/guru anyone
+drop policy if exists perf_read on performances;
 create policy perf_read on performances
   for select to authenticated using (true);
+drop policy if exists perf_write_self on performances;
 create policy perf_write_self on performances
   for all to authenticated using (user_id = auth.uid()) with check (user_id = auth.uid());
+drop policy if exists perf_write_admin on performances;
 create policy perf_write_admin on performances
   for all to authenticated using (is_admin_or_guru(auth.uid())) with check (true);
 
 -- activity_log: admin/guru read; anyone writes via server actions
+drop policy if exists activity_read_admin on activity_log;
 create policy activity_read_admin on activity_log
   for select to authenticated using (is_admin_or_guru(auth.uid()));
+drop policy if exists activity_insert_self on activity_log;
 create policy activity_insert_self on activity_log
   for insert to authenticated with check (actor_id = auth.uid() or actor_id is null);
 
@@ -157,18 +170,22 @@ insert into storage.buckets (id, name, public)
 values ('profile-pics', 'profile-pics', true)
 on conflict (id) do nothing;
 
+drop policy if exists "profile-pics read public" on storage.objects;
 create policy "profile-pics read public" on storage.objects
   for select using (bucket_id = 'profile-pics');
+drop policy if exists "profile-pics write own" on storage.objects;
 create policy "profile-pics write own" on storage.objects
   for insert to authenticated with check (
     bucket_id = 'profile-pics'
     and (storage.foldername(name))[1] = auth.uid()::text
   );
+drop policy if exists "profile-pics update own" on storage.objects;
 create policy "profile-pics update own" on storage.objects
   for update to authenticated using (
     bucket_id = 'profile-pics'
     and (storage.foldername(name))[1] = auth.uid()::text
   );
+drop policy if exists "profile-pics delete own" on storage.objects;
 create policy "profile-pics delete own" on storage.objects
   for delete to authenticated using (
     bucket_id = 'profile-pics'
