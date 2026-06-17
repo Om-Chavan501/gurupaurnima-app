@@ -4,6 +4,7 @@ import "./globals.css";
 import Backdrop from "@/components/Backdrop";
 import Veil from "@/components/Veil";
 import Nav from "@/components/Nav";
+import BottomNav from "@/components/BottomNav";
 import { RaagProvider } from "@/components/RaagProvider";
 import { LocaleProvider } from "@/components/LocaleProvider";
 import { Toaster } from "sonner";
@@ -87,8 +88,9 @@ export default async function RootLayout({
             <Backdrop />
             <Veil />
             <Nav signedIn={!!user} firstName={firstName} profilePicUrl={profilePicUrl} showBell={showBell} unreadCount={unreadCount} showAdmin={showBell} />
+            <BottomNav signedIn={!!user} showAdmin={showBell} />
             <AuthErrorCatcher />
-            <main className="container-x py-8 md:py-12">{children}</main>
+            <main className="container-x py-8 md:py-12 pb-28 md:pb-12">{children}</main>
             <Toaster
               theme="dark"
               position="bottom-center"

@@ -149,14 +149,17 @@ export default function Nav({ signedIn, firstName, profilePicUrl, showBell, unre
                 Sign in
               </Link>
             )}
-            <button
-              onClick={() => setMenuOpen(true)}
-              className="md:hidden p-2 rounded-full"
-              style={{ border: "1px solid var(--line)", color: "var(--ink-1)" }}
-              aria-label="Menu"
-            >
-              <Menu size={16} />
-            </button>
+            {/* Hide hamburger inside /app on mobile — bottom nav handles it */}
+            {!(signedIn && inApp) && (
+              <button
+                onClick={() => setMenuOpen(true)}
+                className="md:hidden p-2 rounded-full"
+                style={{ border: "1px solid var(--line)", color: "var(--ink-1)" }}
+                aria-label="Menu"
+              >
+                <Menu size={16} />
+              </button>
+            )}
           </div>
         </div>
       </motion.header>
