@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import PageTransition from "@/components/PageTransition";
 import { createClient } from "@/lib/supabase/server";
 import type { Instrument, Scale } from "@/lib/types";
@@ -9,6 +10,8 @@ export default async function MyPerformance() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
+  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+  if (profile?.role === "guru") redirect("/app/performances");
   const { data: perf } = await supabase.from("performances").select("*").eq("user_id", user.id).maybeSingle();
 
   const initial = perf ? {

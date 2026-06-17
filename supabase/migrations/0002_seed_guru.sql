@@ -6,5 +6,5 @@ update profiles
 set role = 'guru',
     is_verified = true,
     profile_completed = true
-where email = 'omchavan.dev@gmail.com';
+where email = 'om.chavan501@gmail.com';
 -- where email = 'saurabhkadgaonkar@gmail.com';

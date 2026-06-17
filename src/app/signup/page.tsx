@@ -9,6 +9,7 @@ import PageTransition from "@/components/PageTransition";
 import { createClient } from "@/lib/supabase/client";
 import { checkShishyaCode } from "@/lib/actions";
 import { useT } from "@/components/LocaleProvider";
+import RaagLoader from "@/components/RaagLoader";
 
 type Step = "role" | "code" | "form" | "sent";
 type Role = "shishya" | "audience";
@@ -92,7 +93,7 @@ export default function SignupPage() {
     }
     setBusy(true);
     const supabase = createClient();
-    const { error } = await supabase.auth.signUp({
+    const { data: signUpData, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -109,6 +110,10 @@ export default function SignupPage() {
     setBusy(false);
     if (error) {
       toast.error(error.message);
+      return;
+    }
+    if (!signUpData.user?.identities?.length) {
+      toast.error(t("signup.form.emailAlreadyRegistered"));
       return;
     }
     setStep("sent");
@@ -214,7 +219,9 @@ export default function SignupPage() {
 
                 <div className="flex items-center justify-between pt-2">
                   <button type="button" onClick={() => setStep("role")} className="btn-link text-sm">← {t("common.back")}</button>
-                  <button className="btn" disabled={busy}>{busy ? "…" : t("common.continue")}</button>
+                  <button className="btn" disabled={busy}>
+                    {busy ? <RaagLoader size={18} /> : t("common.continue")}
+                  </button>
                 </div>
               </form>
 
@@ -303,7 +310,7 @@ export default function SignupPage() {
                 <div className="pt-2 flex items-center justify-between">
                   <button type="button" onClick={() => setStep("code")} className="btn-link text-sm">← {t("common.back")}</button>
                   <button className="btn" type="submit" disabled={busy}>
-                    {busy ? t("signup.form.sending") : `${t("signup.form.send")} →`}
+                    {busy ? <RaagLoader size={18} label={t("signup.form.sending")} /> : `${t("signup.form.send")} →`}
                   </button>
                 </div>
 

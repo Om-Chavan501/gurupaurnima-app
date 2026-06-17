@@ -249,6 +249,56 @@ html[data-locale="mr"] .font-display-soft {
   cursor: pointer;
 }
 
+/* ============ Raag loader (lotus bloom) ============ */
+.raag-loader { color: var(--accent); }
+.raag-lotus { animation: raag-drift 7s linear infinite; transform-origin: 32px 50px; }
+.raag-lotus .petal {
+  stroke-dasharray: 70;
+  stroke-dashoffset: 70;
+  opacity: 0;
+  animation: raag-bloom 1.9s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  transform-origin: 32px 50px;
+}
+.raag-lotus .p1 { animation-delay: 0s; }
+.raag-lotus .p2 { animation-delay: 0.12s; }
+.raag-lotus .p3 { animation-delay: 0.24s; }
+.raag-lotus .p4 { animation-delay: 0.36s; }
+.raag-lotus .p5 { animation-delay: 0.48s; }
+.raag-label { animation: raag-pulse 1.9s ease-in-out infinite; }
+
+@keyframes raag-bloom {
+  0%   { stroke-dashoffset: 70; opacity: 0; transform: scale(0.85); }
+  35%  { stroke-dashoffset: 0;  opacity: 1; transform: scale(1); }
+  75%  { stroke-dashoffset: 0;  opacity: 1; transform: scale(1); }
+  100% { stroke-dashoffset: 0;  opacity: 0; transform: scale(0.95); }
+}
+@keyframes raag-drift {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes raag-pulse {
+  0%, 100% { opacity: 0.55; }
+  50%      { opacity: 1; }
+}
+
+/* Fullscreen overlay variant */
+.raag-overlay {
+  position: fixed; inset: 0; z-index: 80;
+  display: grid; place-items: center;
+  background: color-mix(in oklab, var(--bg-0) 78%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  animation: raag-fade 320ms ease;
+}
+@keyframes raag-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .raag-lotus, .raag-lotus .petal, .raag-label { animation: none; }
+  .raag-lotus .petal { stroke-dashoffset: 0; opacity: 1; }
+}
+
 /* ============ Scrollbar ============ */
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-track { background: transparent; }

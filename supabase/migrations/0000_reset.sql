@@ -5,6 +5,9 @@
 -- Usage (Supabase SQL editor): paste and Run.
 -- This does NOT touch auth.users — delete those manually in
 -- Authentication → Users if you want a truly clean slate.
+-- IMPORTANT: if signup emails stop arriving, it's likely because the email
+-- already exists in auth.users (Supabase returns fake 200, no email sent).
+-- Fix: delete the user in Auth → Users, then sign up again.
 -- ============================================================
 
 -- 1. Drop tables (cascade handles FK order)

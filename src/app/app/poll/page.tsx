@@ -10,10 +10,12 @@ export default async function PollPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
 
-  const [{ data: myPicks }, { data: all }] = await Promise.all([
+  const [{ data: myPicks }, { data: all }, { data: profile }] = await Promise.all([
     supabase.from("attendance_poll").select("date").eq("user_id", user.id),
     supabase.from("attendance_poll").select("date, user_id, profiles!inner(first_name, last_name)"),
+    supabase.from("profiles").select("role").eq("id", user.id).single(),
   ]);
+  const isGuru = profile?.role === "guru";
 
   const myPicked = (myPicks ?? []).map((p) => p.date as EventDate);
   const tally: Record<EventDate, { first_name: string; last_name: string; id: string }[]> = {
@@ -31,24 +33,45 @@ export default async function PollPage() {
 
   return (
     <PageTransition>
-      <section className="pt-2 md:pt-6">
-        <div className="text-[11px] tracking-[0.32em] uppercase mb-3" style={{ color: "var(--ink-2)" }}>
-          {t("poll.kicker")}
-        </div>
-        <h1
-          className="font-display"
-          style={{ fontSize: "clamp(34px, 5.5vw, 54px)", lineHeight: 1.05 }}
-        >
-          {t("poll.h1")}
-        </h1>
-        <p className="mt-3 max-w-xl text-[15px]" style={{ color: "var(--ink-1)" }}>
-          {t("poll.intro")}
-        </p>
+      {!isGuru && (
+        <>
+          <section className="pt-2 md:pt-6">
+            <div className="text-[11px] tracking-[0.32em] uppercase mb-3" style={{ color: "var(--ink-2)" }}>
+              {t("poll.kicker")}
+            </div>
+            <h1
+              className="font-display"
+              style={{ fontSize: "clamp(34px, 5.5vw, 54px)", lineHeight: 1.05 }}
+            >
+              {t("poll.h1")}
+            </h1>
+            <p className="mt-3 max-w-xl text-[15px]" style={{ color: "var(--ink-1)" }}>
+              {t("poll.intro")}
+            </p>
 
-        <PollForm initial={myPicked} />
-      </section>
+            <PollForm initial={myPicked} />
+          </section>
 
-      <div className="rule mt-16" />
+          <div className="rule mt-16" />
+        </>
+      )}
+      {isGuru && (
+        <section className="pt-2 md:pt-6">
+          <div className="text-[11px] tracking-[0.32em] uppercase mb-3" style={{ color: "var(--ink-2)" }}>
+            {t("poll.kicker")}
+          </div>
+          <h1
+            className="font-display"
+            style={{ fontSize: "clamp(34px, 5.5vw, 54px)", lineHeight: 1.05 }}
+          >
+            {t("poll.h1")}
+          </h1>
+          <p className="mt-3 max-w-xl text-[15px]" style={{ color: "var(--ink-1)" }}>
+            {t("poll.guruIntro")}
+          </p>
+          <div className="rule mt-12" />
+        </section>
+      )}
 
       <section className="pt-10 pb-6">
         <div className="text-[11px] tracking-[0.32em] uppercase mb-6" style={{ color: "var(--ink-2)" }}>

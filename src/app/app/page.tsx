@@ -45,13 +45,16 @@ export default async function AppHome() {
   const maxVotes = Math.max(...Object.values(tally), 1);
   const perfDone = perf !== null;
   const audience = profile?.role === "audience";
+  const guru = profile?.role === "guru";
 
-  // Compute primary "next step"
+  // Compute primary "next step" — guru oversees, doesn't participate
   let nextStep: { href: string; label: string; sub: string } | null = null;
-  if (!pollSubmitted) {
-    nextStep = { href: "/app/poll", label: t("app.home.step1"), sub: t("app.home.stepOf2_1") };
-  } else if (!audience && !perfDone) {
-    nextStep = { href: "/app/performances/mine", label: t("app.home.step2"), sub: t("app.home.stepOf2_2") };
+  if (!guru) {
+    if (!pollSubmitted) {
+      nextStep = { href: "/app/poll", label: t("app.home.step1"), sub: t("app.home.stepOf2_1") };
+    } else if (!audience && !perfDone) {
+      nextStep = { href: "/app/performances/mine", label: t("app.home.step2"), sub: t("app.home.stepOf2_2") };
+    }
   }
 
   const pollDetail = pollSubmitted
@@ -96,33 +99,35 @@ export default async function AppHome() {
           )}
         </div>
 
-        {/* Two status cards */}
-        <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <StatusCard
-            label={t("app.home.yourDatePick")}
-            value={pollDetail}
-            done={pollSubmitted}
-            href="/app/poll"
-            cta={pollSubmitted ? t("common.edit") : t("common.open")}
-          />
-          {audience ? (
+        {/* Two status cards — guru oversees, no personal cards for him */}
+        {!guru && (
+          <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
             <StatusCard
-              label={t("app.home.performance")}
-              value={t("app.home.audienceDontPerform")}
-              done
-              href="/app/performances"
-              cta={t("app.home.seeList")}
+              label={t("app.home.yourDatePick")}
+              value={pollDetail}
+              done={pollSubmitted}
+              href="/app/poll"
+              cta={pollSubmitted ? t("common.edit") : t("common.open")}
             />
-          ) : (
-            <StatusCard
-              label={t("app.home.yourPerformance")}
-              value={perfDetail}
-              done={perfDone}
-              href="/app/performances/mine"
-              cta={perfDone ? t("common.edit") : t("common.open")}
-            />
-          )}
-        </div>
+            {audience ? (
+              <StatusCard
+                label={t("app.home.performance")}
+                value={t("app.home.audienceDontPerform")}
+                done
+                href="/app/performances"
+                cta={t("app.home.seeList")}
+              />
+            ) : (
+              <StatusCard
+                label={t("app.home.yourPerformance")}
+                value={perfDetail}
+                done={perfDone}
+                href="/app/performances/mine"
+                cta={perfDone ? t("common.edit") : t("common.open")}
+              />
+            )}
+          </div>
+        )}
 
         {/* Mobile next-step CTA — small */}
         {nextStep && (
